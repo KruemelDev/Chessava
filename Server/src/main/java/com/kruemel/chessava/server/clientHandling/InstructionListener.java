@@ -1,9 +1,10 @@
 package com.kruemel.chessava.server.clientHandling;
 
-import com.kruemel.chessava.dto.Packet;
-import com.kruemel.chessava.dto.Util;
+import com.kruemel.chessava.shared.Commands;
+import com.kruemel.chessava.shared.Packet;
+import com.kruemel.chessava.shared.Util;
 
-import java.io.IOException;
+
 
 public class InstructionListener implements Runnable{
 
@@ -17,6 +18,7 @@ public class InstructionListener implements Runnable{
     public void run() {
         String json;
         while (client != null) {
+            System.out.println("start");
             try {
                 json = client.in.readUTF();
             } catch (Exception e) {
@@ -25,10 +27,13 @@ public class InstructionListener implements Runnable{
             }
             Packet packet = Util.jsonToData(json);
             if(packet == null) continue;
-            String command = packet.getCommand();
 
+
+            Commands command = Commands.fromString(packet.getCommand());
+            System.out.println("KOMMANDO" + command);
             switch (command){
-                case "CloseConnection":
+                case CLOSE_CONNECTION:
+                    System.out.println("remove client");
                     client.server.RemoveClient(client);
                     break;
 

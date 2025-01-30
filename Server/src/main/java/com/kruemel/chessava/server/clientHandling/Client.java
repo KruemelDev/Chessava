@@ -37,7 +37,7 @@ public class Client {
 
     public void StartInstructionListener(){
         instructionListener = new InstructionListener(this);
-        new Thread(instructionListener);
+        new Thread(instructionListener).start();
     }
 
     @Override

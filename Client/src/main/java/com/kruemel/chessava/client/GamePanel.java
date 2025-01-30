@@ -1,7 +1,6 @@
 package com.kruemel.chessava.client;
 
 import com.kruemel.chessava.client.player.Player;
-import com.kruemel.chessava.server.Main;
 import com.kruemel.chessava.server.Server;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ public class GamePanel extends JPanel {
 
     private static Server server;
 
-
+    public GameMode gameMode;
     public GamePanel(GameMode gameMode) {
         setPreferredSize(new Dimension(MainFrameManager.instance.screenWidth, MainFrameManager.instance.screenHeight));
         setDoubleBuffered(true);
@@ -26,24 +25,53 @@ public class GamePanel extends JPanel {
     }
 
     private void handleGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
         switch (gameMode) {
-            case singlePlayer:
+            case SINGLE_PLAYER:
                 ip = "127.0.0.1";
                 int singlePlayerPort = port + 2;
-                if(server == null || !server.running){
-                    System.out.println(server);
+                if(server == null){
+
                     server = new Server(singlePlayerPort);
                     server.InitServer();
                     new Thread(server).start();
                 }
-                players[0] = new Player(ip, singlePlayerPort, this);
-                players[1] = new Player(ip, singlePlayerPort, this);
+
+                initNewPlayer(ip, singlePlayerPort, 2);
                 break;
-            case multiPlayer:
-                ip = "192.168.66.66";
-                players[0] = new Player(ip, port, this);
+            case MULTI_PLAYER:
+                ip = "192.168.66.61";
+                initNewPlayer(ip, port, 1);
                 break;
         }
+    }
+
+    public void DestroyPlayer() {
+        for (Player player : players) {
+            player.connectionHandler.SendCloseConnection("Destroy");
+            player = null;
+        }
+    }
+
+    private void initNewPlayer(String ip, int singlePlayerPort, int amount) {
+        for(int i = 0; i < amount; i++){
+            String name = askForName();
+            if(name == null) break;
+            players[i] = new Player(ip, singlePlayerPort, name, this);
+            players[i].InitPlayer();
+        }
+    }
+
+    private String askForName() {
+        while(true){
+            String name = JOptionPane.showInputDialog(
+                    MainFrameManager.instance.mainFrame, "How should your friends find you? ", "Player"
+            );
+            if(name == null) return null;
+            if(!name.isEmpty() && !name.contains("|"))return name;
+        }
+
+
     }
 
     @Override

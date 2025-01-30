@@ -1,6 +1,6 @@
 package com.kruemel.chessava.client;
 
 public enum GameMode {
-    singlePlayer,
-    multiPlayer,
+    SINGLE_PLAYER,
+    MULTI_PLAYER,
 }

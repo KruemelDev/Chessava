@@ -1,8 +1,8 @@
-package com.kruemel.chessava.dto;
+package com.kruemel.chessava.shared;
 
 public class Packet {
     private String command;
-    private String data;
+    private String data = "";
 
     // ! Nicht löschen wird von Jackson benötigt
     public Packet() {}

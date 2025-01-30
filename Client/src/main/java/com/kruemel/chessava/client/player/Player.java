@@ -2,7 +2,10 @@ package com.kruemel.chessava.client.player;
 
 import com.kruemel.chessava.client.GamePanel;
 import com.kruemel.chessava.client.MainFrameManager;
-import com.kruemel.chessava.dto.Util;
+import com.kruemel.chessava.shared.Util;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 
 public class Player {
 
@@ -11,24 +14,33 @@ public class Player {
     private String ip;
     private int port;
 
-    public PlayerType playerType;
+    public DataInputStream in;
+    public DataOutputStream out;
 
+    private String name;
     GamePanel gamePanel;
-    public Player(String ip, int port, GamePanel gamePanel) {
+
+    public Player(String ip, int port, String name, GamePanel gamePanel) {
         this.ip = ip;
         this.port = port;
         this.gamePanel = gamePanel;
+        this.name = name;
 
-        initPlayer();
     }
 
-    private void initPlayer() {
-        connectionHandler = new ConnectionHandler(this.ip, this.port, gamePanel);
+    public void InitPlayer() {
+        connectionHandler = new ConnectionHandler(this.ip, this.port, gamePanel, this);
+
         System.out.println(ip + ":" + port);
         boolean status = connectionHandler.ConnectServer();
-        connectionHandler.WriteMessage(Util.dataToJson("Name", "Test"));
-        // TODO add sending individual name
-        if(!status) MainFrameManager.instance.AddGameModeSelectionScreen();
+        System.out.println(status);
+        if(!status) {
+            MainFrameManager.instance.ShowPopupInfo("Server not found");
+            connectionHandler.ResetToGameModeSelectionScreen("Server not found");
+        }
+
+        connectionHandler.WriteMessage(Util.dataToJson("Name", this.name));
+
         // TODO add option for pop to enter ip + port manualy
 
     }

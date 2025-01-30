@@ -1,6 +1,5 @@
 package com.kruemel.chessava.client;
 
-import com.kruemel.chessava.client.player.ConnectionHandler;
 import com.kruemel.chessava.client.player.Player;
 
 import javax.swing.*;
@@ -30,7 +29,7 @@ public class MainFrameManager {
         mainFrame.setVisible(true);
         mainFrame.setResizable(true);
 
-        AddGameModeSelectionScreen();
+        GameModeSelectionScreen();
     }
 
     public void StartGame(GameMode gameMode) {
@@ -58,9 +57,9 @@ public class MainFrameManager {
             @Override
             public void actionPerformed(ActionEvent event) {
                 for(Player player : gamePanel.players) {
-                    player.connectionHandler.CloseConnection();
+                    if(player == null) continue;
+                    player.connectionHandler.ResetToGameModeSelectionScreen("Player left the game");
                 }
-                AddGameModeSelectionScreen();
             }
         });
         panel.add(leaveGameButton);
@@ -68,9 +67,8 @@ public class MainFrameManager {
         return panel;
     }
 
-    public void AddGameModeSelectionScreen(){
+    public void GameModeSelectionScreen(){
         mainFrame.getContentPane().removeAll();
-
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -82,7 +80,7 @@ public class MainFrameManager {
         startSinglePlayerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                GameMode gameMode = GameMode.singlePlayer;
+                GameMode gameMode = GameMode.SINGLE_PLAYER;
                 StartGame(gameMode);
             }
         });
@@ -93,7 +91,7 @@ public class MainFrameManager {
         startMultiPlayerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                GameMode gameMode = GameMode.multiPlayer;
+                GameMode gameMode = GameMode.MULTI_PLAYER;
                 StartGame(gameMode);
             }
         });
@@ -104,6 +102,10 @@ public class MainFrameManager {
         mainFrame.add(panel);
         mainFrame.revalidate();
         mainFrame.repaint();
+    }
+    public void ShowPopupInfo(String message) {
+        JOptionPane.showMessageDialog(mainFrame, message, "Info", JOptionPane.INFORMATION_MESSAGE);
+
     }
 
 }

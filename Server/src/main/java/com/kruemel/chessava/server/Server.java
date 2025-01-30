@@ -1,12 +1,11 @@
 package com.kruemel.chessava.server;
 
-import com.kruemel.chessava.dto.Packet;
-import com.kruemel.chessava.dto.Util;
+import com.kruemel.chessava.shared.Commands;
+import com.kruemel.chessava.shared.Packet;
+import com.kruemel.chessava.shared.Util;
 import com.kruemel.chessava.server.clientHandling.Client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 
 public class Server implements Runnable {
 
-    public boolean running = true;
     ServerSocket server;
     int port;
 
@@ -29,24 +27,22 @@ public class Server implements Runnable {
     public void run() {
             while(true) {
                 try {
-                    running = true;
                     Socket socket = server.accept();
                     DataInputStream in = new DataInputStream(socket.getInputStream());
 
                     String namePacket = in.readUTF();
                     Packet packet = Util.jsonToData(namePacket);
-
                     if(packet == null) continue;
-
                     String command = packet.getCommand();
                     String name = packet.getData();
-                    System.out.println(name + " " + command);
-                    if(command.equals("Name") && !clientAvailable(name) && !name.contains("|")){
+
+                    ClearClosedClients();
+                    if(command.equals(Commands.NAME.getValue()) && !clientAvailable(name) && !name.contains("|") && !name.isEmpty()){
                         AddClient(name, socket);
                     }
                     else{
                         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                        String json = Util.dataToJson("CloseConnection");
+                        String json = Util.dataToJson(Commands.CLOSE_CONNECTION.getValue(), "Name is already in use. Or there are some unallowed chars in the name");
                         try {
                             out.writeUTF(json);
                         }catch(Exception e) {
@@ -56,11 +52,11 @@ public class Server implements Runnable {
                     }
 
                 } catch (Exception e){
-                    running = false;
-                    break;
+                    throw new RuntimeException(e);
                 }
             }
     }
+
 
     public void StartGame(Client client1, Client client2) {
         Game game = new Game(client1, client2);
@@ -70,6 +66,13 @@ public class Server implements Runnable {
         Client client = new Client(name, socket, this);
         client.StartInstructionListener();
         this.clients.add(client);
+        System.out.println("client amount" + this.clients.size());
+    }
+
+    private void ClearClosedClients() {
+        for(Client client : this.clients) {
+            if (client == null || client.socket.isClosed()) RemoveClient(client);
+        }
     }
 
     public void RemoveClient(Client client) {
