@@ -66,7 +66,23 @@ public class Server implements Runnable {
         Client client = new Client(name, socket, this);
         client.StartInstructionListener();
         this.clients.add(client);
+        UpdateAvailablePlayer();
         System.out.println("client amount" + this.clients.size());
+    }
+
+    public void UpdateAvailablePlayer(){
+        StringBuilder players = BuildPlayerString();
+        for(Client client : this.clients){
+            client.WriteMessage(Util.dataToJson(Commands.PLAYER_AVAILABLE.getValue(), players.toString()));
+        }
+    }
+
+    private StringBuilder BuildPlayerString(){
+        StringBuilder players = new StringBuilder();
+        for(Client client : this.clients){
+            players.append(client.name).append("|");
+        }
+        return players;
     }
 
     private void ClearClosedClients() {
@@ -78,6 +94,7 @@ public class Server implements Runnable {
     public void RemoveClient(Client client) {
         this.clients.remove(client);
         client = null;
+        UpdateAvailablePlayer();
     }
 
     private boolean clientAvailable(String name){

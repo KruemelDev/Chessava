@@ -34,6 +34,17 @@ public class Client {
             server.RemoveClient(this);
         }
     }
+    public void WriteMessage(String json) {
+        try {
+            if (out != null) {
+                out.writeUTF(json);
+                out.flush();
+            }
+        } catch (IOException e) {
+            server.RemoveClient(this);
+        }
+
+    }
 
     public void StartInstructionListener(){
         instructionListener = new InstructionListener(this);

@@ -15,6 +15,7 @@ public class InstructionListener implements Runnable{
     GamePanel gamePanel;
     public InstructionListener(ConnectionHandler connectionHandler, GamePanel gamePanel) {
         this.connectionHandler = connectionHandler;
+        this.gamePanel = gamePanel;
     }
 
     @Override
@@ -39,9 +40,26 @@ public class InstructionListener implements Runnable{
                     if (gamePanel.gameMode == GameMode.SINGLE_PLAYER) gamePanel.DestroyPlayer();
                     connectionHandler.ResetToGameModeSelectionScreen("ClosedCon");
                     break;
+
+                case PLAYER_AVAILABLE:
+                    if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
+                    String players = packet.getData();
+                    if(!players.isEmpty()){
+                        UpdatePlayerList(players);
+                    }
+                    break;
             }
 
         }
+    }
+    public void UpdatePlayerList(String players){
+        String[] playerArray = players.split("\\|");
+        for (int i = 0; i < playerArray.length; i++) {
+            if (Objects.equals(playerArray[i], gamePanel.players[0].name) || Objects.equals(playerArray[i], gamePanel.players[1].name)) {
+                playerArray[i] = playerArray[i] + " (self)";
+            }
+        }
+        MainFrameManager.instance.UpdatePlayerList(playerArray);
     }
 
 

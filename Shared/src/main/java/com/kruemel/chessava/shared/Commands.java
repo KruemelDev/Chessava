@@ -2,7 +2,8 @@ package com.kruemel.chessava.shared;
 
 public enum Commands {
     NAME("Name"),
-    CLOSE_CONNECTION("CloseConnection");
+    CLOSE_CONNECTION("CloseConnection"),
+    PLAYER_AVAILABLE("PlayerAvailable");
 
 
     private final String command;

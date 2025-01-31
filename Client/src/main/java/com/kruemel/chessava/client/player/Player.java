@@ -17,7 +17,7 @@ public class Player {
     public DataInputStream in;
     public DataOutputStream out;
 
-    private String name;
+    public String name;
     GamePanel gamePanel;
 
     public Player(String ip, int port, String name, GamePanel gamePanel) {

@@ -35,10 +35,17 @@ public class MainFrameManager {
     public void StartGame(GameMode gameMode) {
         mainFrame.getContentPane().removeAll();
         GamePanel gamePanel = new GamePanel(gameMode);
-        JPanel buttonPanelSiteBar = AddGameLeaveOption(gamePanel);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanelSiteBar, gamePanel);
+        JPanel gameLeavePanel = AddGameLeaveOption(gamePanel);
+        JPanel playerListPanel = AddPlayerList();
+
+        JPanel optionsPanel = new JPanel();
+        optionsPanel.add(gameLeavePanel);
+        optionsPanel.add(playerListPanel);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPanel, gamePanel);
         splitPane.setDividerLocation(200);
+        splitPane.setResizeWeight(0.8);
 
         mainFrame.add(splitPane);
         mainFrame.pack();
@@ -47,33 +54,94 @@ public class MainFrameManager {
         mainFrame.repaint();
     }
 
-    private JPanel AddGameLeaveOption(GamePanel gamePanel) {
-
+    public void UpdatePlayerList(String[] players){
+        playerList.setListData(players);
+        mainFrame.revalidate();
+        mainFrame.repaint();
+        System.out.println(players[0]);
+    }
+    JList<String> playerList = new JList<>();
+    private JPanel AddPlayerList() {
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JButton leaveGameButton = new JButton("LeaveGame");
+        JLabel playerListLabel = new JLabel("Player List: ");
+        playerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JScrollPane scrollPane = new JScrollPane(playerList);
+        scrollPane.setPreferredSize(new Dimension(180, 150));
+
+        panel.add(playerListLabel);
+        panel.add(scrollPane);
+
+        return panel;
+    }
+
+    private JPanel AddGameLeaveOption(GamePanel gamePanel) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JButton leaveGameButton = new JButton("Leave Game");
         leaveGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        leaveGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                for(Player player : gamePanel.players) {
-                    if(player == null) continue;
+        leaveGameButton.addActionListener(event -> {
+            for (Player player : gamePanel.players) {
+                if (player != null) {
                     player.connectionHandler.ResetToGameModeSelectionScreen("Player left the game");
                 }
             }
         });
+
         panel.add(leaveGameButton);
-        mainFrame.add(panel);
+        return panel;
+    }
+
+
+    private JPanel AddMultiPlayerDestinationFields(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+
+        JLabel destinationLabel = new JLabel("Destination: ");
+        destinationLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        destinationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel ipLabel = new JLabel("Ip: ");
+        ipLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JTextField ipField = new JTextField();
+        ipField.setMaximumSize(new Dimension(100, 25));
+
+        JLabel portLabel = new JLabel("Port: ");
+        portLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JTextField portField = new JTextField();
+        portField.setText(Integer.toString(GamePanel.port));
+        portField.setMaximumSize(new Dimension(100, 25));
+
+
+        JButton applyButton = new JButton("Apply");
+        applyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        applyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                GamePanel.setMultiPlayerDestination(ipField.getText(), Integer.parseInt(portField.getText()));
+            }
+        });
+
+
+        panel.add(destinationLabel);
+        panel.add(ipLabel);
+        panel.add(ipField);
+        panel.add(portLabel);
+        panel.add(portField);
+        panel.add(applyButton);
+
         return panel;
     }
 
     public void GameModeSelectionScreen(){
         mainFrame.getContentPane().removeAll();
         JPanel panel = new JPanel();
+
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
         panel.add(Box.createVerticalGlue());
-
 
         JButton startSinglePlayerButton = new JButton("singlePlayer");
         startSinglePlayerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -97,6 +165,9 @@ public class MainFrameManager {
         });
         panel.add(startMultiPlayerButton);
 
+
+        JPanel destinationPanel = AddMultiPlayerDestinationFields();
+        panel.add(destinationPanel);
         panel.add(Box.createVerticalGlue());
 
         mainFrame.add(panel);

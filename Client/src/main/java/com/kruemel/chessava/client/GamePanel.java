@@ -7,10 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel {
-    public String ip;
-    public int port = 45565;
 
-    Player[] players = new Player[2];
+    public static int port = 45565;
+    public String singlePlayerIp = "127.0.0.1";
+    public static String multiPlayerIp;
+
+    public Player[] players = new Player[2];
 
     private static Server server;
 
@@ -28,21 +30,22 @@ public class GamePanel extends JPanel {
         this.gameMode = gameMode;
         switch (gameMode) {
             case SINGLE_PLAYER:
-                ip = "127.0.0.1";
                 int singlePlayerPort = port + 2;
-                if(server == null){
 
-                    server = new Server(singlePlayerPort);
-                    server.InitServer();
-                    new Thread(server).start();
-                }
-
-                initNewPlayer(ip, singlePlayerPort, 2);
+                startServerIfPossible(singlePlayerPort);
+                initNewPlayer(singlePlayerIp, singlePlayerPort, 2);
                 break;
             case MULTI_PLAYER:
-                ip = "192.168.66.61";
-                initNewPlayer(ip, port, 1);
+                initNewPlayer(singlePlayerIp, port, 1);
                 break;
+        }
+    }
+
+    private void startServerIfPossible(int port) {
+        if(server == null){
+            server = new Server(port);
+            server.InitServer();
+            new Thread(server).start();
         }
     }
 
@@ -56,11 +59,17 @@ public class GamePanel extends JPanel {
     private void initNewPlayer(String ip, int singlePlayerPort, int amount) {
         for(int i = 0; i < amount; i++){
             String name = askForName();
-            if(name == null) break;
+            if(name == null && gameMode == GameMode.SINGLE_PLAYER) {
+                DestroyPlayer();
+                MainFrameManager.instance.GameModeSelectionScreen();
+                break;
+            } else if(name == null && gameMode == GameMode.MULTI_PLAYER) break;
             players[i] = new Player(ip, singlePlayerPort, name, this);
             players[i].InitPlayer();
         }
     }
+
+
 
     private String askForName() {
         while(true){
@@ -72,6 +81,11 @@ public class GamePanel extends JPanel {
         }
 
 
+    }
+
+    public static void setMultiPlayerDestination(String ip, int port){
+        GamePanel.port = port;
+        GamePanel.multiPlayerIp = ip;
     }
 
     @Override
