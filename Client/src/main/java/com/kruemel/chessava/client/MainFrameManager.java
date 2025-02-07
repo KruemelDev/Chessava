@@ -1,5 +1,7 @@
 package com.kruemel.chessava.client;
 
+import com.kruemel.chessava.client.game.GameMode;
+import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.client.player.Player;
 
 import javax.swing.*;
@@ -37,19 +39,21 @@ public class MainFrameManager {
         GamePanel gamePanel = new GamePanel(gameMode);
 
         JPanel gameLeavePanel = AddGameLeaveOption(gamePanel);
-        JPanel playerListPanel = AddPlayerList();
+        JPanel playerListPanel = AddPlayerList(gamePanel);
 
         JPanel optionsPanel = new JPanel();
+        optionsPanel.setMaximumSize(new Dimension(200, screenHeight - mainFrame.getInsets().top));
+        optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
+        optionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         optionsPanel.add(gameLeavePanel);
         optionsPanel.add(playerListPanel);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPanel, gamePanel);
-        splitPane.setDividerLocation(200);
-        splitPane.setResizeWeight(0.8);
 
         mainFrame.add(splitPane);
-        mainFrame.pack();
         mainFrame.setResizable(false);
+        mainFrame.pack();
         mainFrame.revalidate();
         mainFrame.repaint();
     }
@@ -61,18 +65,35 @@ public class MainFrameManager {
         System.out.println(players[0]);
     }
     JList<String> playerList = new JList<>();
-    private JPanel AddPlayerList() {
+
+    private JPanel AddPlayerList(GamePanel gamePanel) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setMaximumSize(new Dimension(200, 500));
 
         JLabel playerListLabel = new JLabel("Player List: ");
+        playerListLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         playerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(playerList);
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         scrollPane.setPreferredSize(new Dimension(180, 150));
+
+
+        JButton battleButton = new JButton("Battle");
+        battleButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        battleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(playerList.getSelectedValue() != null){
+                    gamePanel.players[0].connectionHandler.RequestGameStart(playerList.getSelectedValue());
+                }
+            }
+        });
 
         panel.add(playerListLabel);
         panel.add(scrollPane);
+        panel.add(battleButton);
 
         return panel;
     }

@@ -1,14 +1,7 @@
-package com.kruemel.chessava.shared;
+package com.kruemel.chessava.shared.networking;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-
-import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
 
 
 public class Util {

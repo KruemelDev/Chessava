@@ -1,8 +1,9 @@
 package com.kruemel.chessava.server;
 
-import com.kruemel.chessava.shared.Commands;
-import com.kruemel.chessava.shared.Packet;
-import com.kruemel.chessava.shared.Util;
+import com.kruemel.chessava.server.game.Game;
+import com.kruemel.chessava.shared.networking.Commands;
+import com.kruemel.chessava.shared.networking.Packet;
+import com.kruemel.chessava.shared.networking.Util;
 import com.kruemel.chessava.server.clientHandling.Client;
 
 import java.io.*;
@@ -37,7 +38,7 @@ public class Server implements Runnable {
                     String name = packet.getData();
 
                     ClearClosedClients();
-                    if(command.equals(Commands.NAME.getValue()) && !clientAvailable(name) && !name.contains("|") && !name.isEmpty()){
+                    if(command.equals(Commands.NAME.getValue()) && !ClientAvailable(name) && !name.contains("|") && !name.isEmpty()){
                         AddClient(name, socket);
                     }
                     else{
@@ -67,7 +68,14 @@ public class Server implements Runnable {
         client.StartInstructionListener();
         this.clients.add(client);
         UpdateAvailablePlayer();
+        System.out.println("Client " + name + " added to game");
         System.out.println("client amount" + this.clients.size());
+    }
+    public Client GetClient(String name) {
+        for(Client client : this.clients) {
+            if (client.name.equals(name)) return client;
+        }
+        return null;
     }
 
     public void UpdateAvailablePlayer(){
@@ -97,7 +105,8 @@ public class Server implements Runnable {
         UpdateAvailablePlayer();
     }
 
-    private boolean clientAvailable(String name){
+
+    public boolean ClientAvailable(String name){
         // TODO check other server with redis request etc.
 
         for(Client client: clients){

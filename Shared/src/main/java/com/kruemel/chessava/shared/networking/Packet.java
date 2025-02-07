@@ -1,4 +1,4 @@
-package com.kruemel.chessava.shared;
+package com.kruemel.chessava.shared.networking;
 
 public class Packet {
     private String command;

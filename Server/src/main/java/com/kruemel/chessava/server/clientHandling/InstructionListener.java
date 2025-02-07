@@ -1,17 +1,22 @@
 package com.kruemel.chessava.server.clientHandling;
 
-import com.kruemel.chessava.shared.Commands;
-import com.kruemel.chessava.shared.Packet;
-import com.kruemel.chessava.shared.Util;
+import com.kruemel.chessava.server.game.Game;
+import com.kruemel.chessava.server.Server;
+import com.kruemel.chessava.shared.networking.Commands;
+import com.kruemel.chessava.shared.networking.Packet;
+import com.kruemel.chessava.shared.networking.Util;
 
+import java.util.Objects;
 
 
 public class InstructionListener implements Runnable{
 
     volatile Client client;
+    Server server;
 
-    public InstructionListener(Client client) {
+    public InstructionListener(Client client, Server server) {
         this.client = client;
+        this.server = server;
     }
 
     @Override
@@ -36,9 +41,56 @@ public class InstructionListener implements Runnable{
                     System.out.println("remove client");
                     client.server.RemoveClient(client);
                     break;
-
+                case BATTLE_REQUEST:
+                    sendBattleRequest(packet);
+                    break;
+                case BATTLE_ACCEPT:
+                    if(!acceptBattle(packet)) break;
+                    Game game = new Game(this.client, this.client.acceptClient);
+                    game.InitGame();
+                    break;
+                case BATTLE_DECLINE:
+                   if(this.client.acceptClient == null) break;
+                   this.client.acceptClient.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The request was declined"));
+                   this.client.acceptClient = null;
+                   break;
             }
 
         }
+    }
+    private boolean acceptBattle(Packet packet){
+        String name = packet.getData();
+
+        if(!Objects.equals(name, this.client.acceptClient.name)){
+            this.client.acceptClient = null;
+            return false;
+        }
+        return true;
+    }
+
+    private void sendBattleRequest(Packet packet) {
+        String name = packet.getData();
+        System.out.println("gesendeter name " + name);
+        if(!server.ClientAvailable(name)){
+            client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "Player does not exist"));
+            return;
+        }
+        if(Objects.equals(client.name, name)){
+            client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "You can not send a battle request to yourself"));
+            return;
+        }
+
+        Client client = server.GetClient(name);
+        if(client == null) return;
+        if(client.inGame){
+            client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The player is already in game"));
+            return;
+        }
+
+        client.acceptClient = this.client;
+
+        String json = Util.dataToJson(Commands.BATTLE_REQUEST.getValue(), this.client.name);
+        client.WriteMessage(json);
+
     }
 }

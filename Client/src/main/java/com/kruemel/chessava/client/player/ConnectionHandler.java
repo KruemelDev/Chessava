@@ -1,9 +1,9 @@
 package com.kruemel.chessava.client.player;
 
-import com.kruemel.chessava.client.GamePanel;
+import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.client.MainFrameManager;
-import com.kruemel.chessava.shared.Commands;
-import com.kruemel.chessava.shared.Util;
+import com.kruemel.chessava.shared.networking.Commands;
+import com.kruemel.chessava.shared.networking.Util;
 
 import java.io.*;
 import java.net.*;
@@ -64,6 +64,15 @@ public class ConnectionHandler {
                 throw new RuntimeException(e);
             }
         }
+
+    }
+    public void RequestGameStart(String name){
+        if (name.endsWith(" (self)")) {
+            name = name.substring(0, name.lastIndexOf(" (self)")).trim();
+        }
+
+        String json = Util.dataToJson(Commands.BATTLE_REQUEST.getValue(), name);
+        WriteMessage(json);
 
     }
 

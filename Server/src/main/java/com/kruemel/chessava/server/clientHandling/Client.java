@@ -14,9 +14,14 @@ public class Client {
     public DataInputStream in;
     public DataOutputStream out;
 
+    public Client acceptClient;
+
     private InstructionListener instructionListener;
 
     Server server;
+
+    public boolean inGame;
+
     public Client(String name, Socket socket, Server server) {
         this.name = name;
         this.socket = socket;
@@ -47,7 +52,7 @@ public class Client {
     }
 
     public void StartInstructionListener(){
-        instructionListener = new InstructionListener(this);
+        instructionListener = new InstructionListener(this, server);
         new Thread(instructionListener).start();
     }
 

@@ -1,5 +1,6 @@
-package com.kruemel.chessava.client;
+package com.kruemel.chessava.client.game;
 
+import com.kruemel.chessava.client.MainFrameManager;
 import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.server.Server;
 
@@ -12,13 +13,18 @@ public class GamePanel extends JPanel {
     public String singlePlayerIp = "127.0.0.1";
     public static String multiPlayerIp;
 
+    public int gamePanelSize = 800 - MainFrameManager.instance.mainFrame.getInsets().top;
+
     public Player[] players = new Player[2];
 
     private static Server server;
 
     public GameMode gameMode;
+    public Board board = new Board(this);
+
     public GamePanel(GameMode gameMode) {
-        setPreferredSize(new Dimension(MainFrameManager.instance.screenWidth, MainFrameManager.instance.screenHeight));
+        setPreferredSize(new Dimension(gamePanelSize, gamePanelSize));
+        setMaximumSize(new Dimension(gamePanelSize, gamePanelSize));
         setDoubleBuffered(true);
         setBackground(Color.GRAY);
         this.setFocusable(true);
@@ -51,6 +57,7 @@ public class GamePanel extends JPanel {
 
     public void DestroyPlayer() {
         for (Player player : players) {
+            if (player == null) continue;
             player.connectionHandler.SendCloseConnection("Destroy");
             player = null;
         }
@@ -59,11 +66,11 @@ public class GamePanel extends JPanel {
     private void initNewPlayer(String ip, int singlePlayerPort, int amount) {
         for(int i = 0; i < amount; i++){
             String name = askForName();
-            if(name == null && gameMode == GameMode.SINGLE_PLAYER) {
+            if(name == null) {
                 DestroyPlayer();
                 MainFrameManager.instance.GameModeSelectionScreen();
                 break;
-            } else if(name == null && gameMode == GameMode.MULTI_PLAYER) break;
+            }
             players[i] = new Player(ip, singlePlayerPort, name, this);
             players[i].InitPlayer();
         }
@@ -82,6 +89,16 @@ public class GamePanel extends JPanel {
 
 
     }
+    public boolean BattleRequest(String name){
+        int result = JOptionPane.showConfirmDialog(
+                MainFrameManager.instance.mainFrame,
+                "Battle " + name + "?",
+                "Battle Request",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+        return result == JOptionPane.YES_OPTION;
+    }
 
     public static void setMultiPlayerDestination(String ip, int port){
         GamePanel.port = port;
@@ -92,8 +109,7 @@ public class GamePanel extends JPanel {
     public void paint(Graphics g){
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.red);
-        g2d.fillRect(0, 0, 30, 30);
+        board.Paint(g2d);
 
         g2d.dispose();
     }

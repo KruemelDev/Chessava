@@ -1,8 +1,8 @@
 package com.kruemel.chessava.client.player;
 
-import com.kruemel.chessava.client.GamePanel;
+import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.client.MainFrameManager;
-import com.kruemel.chessava.shared.Util;
+import com.kruemel.chessava.shared.networking.Util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

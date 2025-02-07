@@ -1,12 +1,17 @@
 package com.kruemel.chessava.client.player;
 
-import com.kruemel.chessava.client.GameMode;
-import com.kruemel.chessava.client.GamePanel;
-import com.kruemel.chessava.client.MainFrameManager;
-import com.kruemel.chessava.shared.Commands;
-import com.kruemel.chessava.shared.Packet;
-import com.kruemel.chessava.shared.Util;
+import com.kruemel.chessava.client.*;
+import com.kruemel.chessava.client.game.Board;
+import com.kruemel.chessava.client.game.GameMode;
+import com.kruemel.chessava.client.game.GamePanel;
+import com.kruemel.chessava.shared.networking.Commands;
+import com.kruemel.chessava.shared.networking.Packet;
+import com.kruemel.chessava.shared.networking.Util;
+import com.kruemel.chessava.shared.game.Figure;
+import com.kruemel.chessava.shared.game.FigureType;
 
+import java.awt.*;
+import java.awt.desktop.SystemSleepEvent;
 import java.util.Objects;
 
 public class InstructionListener implements Runnable{
@@ -48,15 +53,78 @@ public class InstructionListener implements Runnable{
                         UpdatePlayerList(players);
                     }
                     break;
+                case BATTLE_REQUEST:
+                    String name = packet.getData();
+                    if (name.isEmpty()) break;
+                    if(!gamePanel.BattleRequest(name)){
+                        this.connectionHandler.WriteMessage(Util.dataToJson(Commands.BATTLE_DECLINE.getValue(), name));
+                    } else{
+                        this.connectionHandler.WriteMessage(Util.dataToJson(Commands.BATTLE_ACCEPT.getValue(), name));
+                    }
+                    break;
+                case START_GAME:
+                    Board.gameStart = true;
+                    gamePanel.repaint();
+                    break;
+                case SET_FIGURES:
+                    if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
+                    String figuresString = packet.getData();
+                    gamePanel.board.figures = figureStringToFigures(figuresString);
+                    gamePanel.repaint();
+                    break;
+                case ERROR:
+                    MainFrameManager.instance.ShowPopupInfo(packet.getData());
+                    break;
+
             }
 
         }
     }
+    private Figure[][] figureStringToFigures(String figuresString){
+        String[] figuresSplit = figuresString.split("\\|");
+
+        Figure[][] figures = new Figure[8][8];
+         for(int i = 0; i < 8; i++){
+             for(int j = 0; j < 8; j++){
+                 String currentString = figuresSplit[i*j];
+
+                 if(currentString.isEmpty() || currentString.equals("null")){
+                     figures[i][j] = null;
+                     continue;
+                 }
+
+                 String[] figureColorSplit = currentString.split("\\(");
+
+                 FigureType figureType = FigureType.valueOf(figureColorSplit[0].toUpperCase());
+                 Color color = getFigureColor(figureColorSplit[1]);
+                 if (color == null) throw new RuntimeException(); // LOGIC TO END GAME
+                 Figure figure = figureType.createInstance(color);
+                 figures[i][j] = figure;
+             }
+         }
+
+        return figures;
+    }
+
+    private Color getFigureColor(String str){
+        String colorString = str.replaceAll("[\\(\\)]", "");
+        if (colorString.equalsIgnoreCase("black")){
+            return Color.BLACK;
+        } else if (colorString.equalsIgnoreCase("white")){
+            return Color.WHITE;
+        }
+        return null;
+    }
+
+
     public void UpdatePlayerList(String players){
         String[] playerArray = players.split("\\|");
         for (int i = 0; i < playerArray.length; i++) {
-            if (Objects.equals(playerArray[i], gamePanel.players[0].name) || Objects.equals(playerArray[i], gamePanel.players[1].name)) {
-                playerArray[i] = playerArray[i] + " (self)";
+            for (Player player : gamePanel.players){
+                if (player == null) continue;
+                if (Objects.equals(playerArray[i], player.name)) {
+                    playerArray[i] = playerArray[i] + " (self)";
+                }
             }
         }
         MainFrameManager.instance.UpdatePlayerList(playerArray);

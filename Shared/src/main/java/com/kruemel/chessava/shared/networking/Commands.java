@@ -1,10 +1,15 @@
-package com.kruemel.chessava.shared;
+package com.kruemel.chessava.shared.networking;
 
 public enum Commands {
     NAME("Name"),
     CLOSE_CONNECTION("CloseConnection"),
-    PLAYER_AVAILABLE("PlayerAvailable");
-
+    PLAYER_AVAILABLE("PlayerAvailable"),
+    BATTLE_REQUEST("BattleRequest"),
+    BATTLE_ACCEPT("BattleAccept"),
+    BATTLE_DECLINE("BattleDecline"),
+    START_GAME("StartGame"),
+    SET_FIGURES("SetFigures"),
+    ERROR("Error");
 
     private final String command;
 
