@@ -1,7 +1,6 @@
 package com.kruemel.chessava.client.player;
 
 import com.kruemel.chessava.client.*;
-import com.kruemel.chessava.client.game.Board;
 import com.kruemel.chessava.client.game.GameMode;
 import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.shared.networking.Commands;
@@ -11,7 +10,7 @@ import com.kruemel.chessava.shared.game.Figure;
 import com.kruemel.chessava.shared.game.FigureType;
 
 import java.awt.*;
-import java.awt.desktop.SystemSleepEvent;
+
 import java.util.Objects;
 
 public class InstructionListener implements Runnable{
@@ -63,8 +62,8 @@ public class InstructionListener implements Runnable{
                     }
                     break;
                 case START_GAME:
-                    Board.gameStart = true;
                     gamePanel.repaint();
+                    gamePanel.addMouseListener();
                     break;
                 case SET_FIGURES:
                     if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
@@ -86,10 +85,10 @@ public class InstructionListener implements Runnable{
         Figure[][] figures = new Figure[8][8];
          for(int i = 0; i < 8; i++){
              for(int j = 0; j < 8; j++){
-                 String currentString = figuresSplit[i*j];
+                 String currentString = figuresSplit[i * 8 + j];
 
                  if(currentString.isEmpty() || currentString.equals("null")){
-                     figures[i][j] = null;
+                     figures[j][i] = null;
                      continue;
                  }
 
@@ -97,9 +96,9 @@ public class InstructionListener implements Runnable{
 
                  FigureType figureType = FigureType.valueOf(figureColorSplit[0].toUpperCase());
                  Color color = getFigureColor(figureColorSplit[1]);
-                 if (color == null) throw new RuntimeException(); // LOGIC TO END GAME
+                 if (color == null) throw new RuntimeException(); // TODO LOGIC TO END GAME
                  Figure figure = figureType.createInstance(color);
-                 figures[i][j] = figure;
+                 figures[j][i] = figure;
              }
          }
 
@@ -108,9 +107,9 @@ public class InstructionListener implements Runnable{
 
     private Color getFigureColor(String str){
         String colorString = str.replaceAll("[\\(\\)]", "");
-        if (colorString.equalsIgnoreCase("black")){
+        if (colorString.equals("black")){
             return Color.BLACK;
-        } else if (colorString.equalsIgnoreCase("white")){
+        } else if (colorString.equals("white")){
             return Color.WHITE;
         }
         return null;

@@ -6,6 +6,10 @@ import com.kruemel.chessava.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GamePanel extends JPanel {
 
@@ -30,6 +34,17 @@ public class GamePanel extends JPanel {
         this.setFocusable(true);
 
         handleGameMode(gameMode);
+
+    }
+
+    public void addMouseListener() {
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                System.out.println("pressed at x: " + e.getX() + "pressed at y: " + e.getY());
+            }
+        });
     }
 
     private void handleGameMode(GameMode gameMode) {

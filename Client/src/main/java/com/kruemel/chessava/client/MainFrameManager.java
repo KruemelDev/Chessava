@@ -16,6 +16,7 @@ public class MainFrameManager {
 
 
     public static MainFrameManager instance;
+    public Color backgroundColor = new Color(170, 160, 110);
 
     public MainFrameManager(String mainFrameTitle, int screenWidth, int screenHeight) {
         instance = this;
@@ -28,6 +29,7 @@ public class MainFrameManager {
         mainFrame = new JFrame(this.mainFrameTitle);
         mainFrame.setSize(this.screenWidth, this.screenHeight);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         mainFrame.setVisible(true);
         mainFrame.setResizable(true);
 

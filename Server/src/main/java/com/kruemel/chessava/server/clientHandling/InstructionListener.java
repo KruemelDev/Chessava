@@ -83,7 +83,7 @@ public class InstructionListener implements Runnable{
         Client client = server.GetClient(name);
         if(client == null) return;
         if(client.inGame){
-            client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The player is already in game"));
+            this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The player is already in game"));
             return;
         }
 
