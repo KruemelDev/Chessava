@@ -30,9 +30,9 @@ public enum FigureType {
         return name;
     }
 
-    public Figure createInstance(Color color) {
+    public Figure createInstance(Color color, int x, int y) {
         try {
-            return figureClass.getDeclaredConstructor(Color.class).newInstance(color);
+            return figureClass.getDeclaredConstructor(Color.class, int.class, int.class).newInstance(color, x, y);
         } catch (Exception e) {
             throw new RuntimeException("Fehler beim Erstellen der Instanz", e);
         }

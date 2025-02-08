@@ -3,6 +3,8 @@ package com.kruemel.chessava.client.game;
 import com.kruemel.chessava.client.MainFrameManager;
 import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.server.Server;
+import com.kruemel.chessava.shared.networking.Commands;
+import com.kruemel.chessava.shared.networking.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,8 +20,10 @@ public class GamePanel extends JPanel {
     public static String multiPlayerIp;
 
     public int gamePanelSize = 800 - MainFrameManager.instance.mainFrame.getInsets().top;
+    public int tileSize = gamePanelSize / 8;
 
     public Player[] players = new Player[2];
+    public String currentPlayerName;
 
     private static Server server;
 
@@ -40,11 +44,78 @@ public class GamePanel extends JPanel {
     public void addMouseListener() {
         this.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseReleased(MouseEvent e) {
                 super.mouseClicked(e);
-                System.out.println("pressed at x: " + e.getX() + "pressed at y: " + e.getY());
+                handleMouseEvent(e);
+
             }
         });
+    }
+    private long lastClickTime = System.currentTimeMillis();
+    private void handleMouseEvent(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            float x = getClickedPos(e.getX());
+            float y = getClickedPos(e.getY());
+
+            long now = System.currentTimeMillis();
+            if (System.currentTimeMillis() - lastClickTime > 50) {
+                lastClickTime = now;
+                System.out.println("mark");
+                markField((int) x,(int) y);
+
+            }
+
+        }
+        else if (e.getButton() == MouseEvent.BUTTON3) {
+            System.out.println("rechts click");
+
+            placeFigure((int) getClickedPos(e.getX()), (int) getClickedPos(e.getY()));
+        }
+    }
+    private Player getCurrentPlayer() {
+        if (currentPlayerName == null) return null;
+        for (Player player : players) {
+            if (player.name.equals(currentPlayerName)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    private void placeFigure(int x, int y) {
+        if(board.selectedFigure == null) return;
+        if (board.selectedFigure.CheckMove(x, y, board.figures)) {
+            Player player = getCurrentPlayer();
+            if (player == null) return;
+            // TODO fix sending twice
+            player.connectionHandler.WriteMessage(Util.dataToJson(Commands.MOVE_FIGURE.getValue(), board.selectedFigure.x + "|" + board.selectedFigure.y + "|" + x + "|" + y));
+
+        }
+    }
+
+
+    private int previousX = -1;
+    private int previousY = -1;
+    private void markField(int x, int y){
+
+        if (x == previousX && y == previousY) {
+            board.selectedFigure = null;
+            repaint();
+            return;
+        }
+        previousX = x;
+        previousY = y;
+
+        board.clickedFieldX = x;
+        board.clickedFieldY = y;
+        board.selectedFigure = board.figures[x][y];
+        repaint();
+    }
+
+    private float getClickedPos(float pos) {
+        float clickedPos = (pos / 800) * 8;
+        return Math.round(clickedPos);
+
     }
 
     private void handleGameMode(GameMode gameMode) {

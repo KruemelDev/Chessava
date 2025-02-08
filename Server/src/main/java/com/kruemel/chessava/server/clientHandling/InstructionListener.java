@@ -54,10 +54,28 @@ public class InstructionListener implements Runnable{
                    this.client.acceptClient.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The request was declined"));
                    this.client.acceptClient = null;
                    break;
+                case MOVE_FIGURE:
+                    moveFigure(packet);
+                    break;
             }
 
         }
     }
+    private void moveFigure(Packet packet) {
+        String poss = packet.getData();
+        String[] positions = poss.split("\\|");
+
+        try{
+            if(!this.client.game.currentPlayer.equals(this.client)) {
+                this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "It is not your turn"));
+                return;
+            }
+            this.client.game.MoveFigure(Integer.parseInt(positions[0]), Integer.parseInt(positions[1]), Integer.parseInt(positions[2]), Integer.parseInt(positions[3]));
+        } catch (Exception e){
+            this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "Error try again later"));
+        }
+    }
+
     private boolean acceptBattle(Packet packet){
         String name = packet.getData();
 

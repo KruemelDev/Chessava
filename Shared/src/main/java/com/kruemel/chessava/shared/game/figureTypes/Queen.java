@@ -7,13 +7,13 @@ import java.awt.Color;
 
 public class Queen extends Figure {
     String imagePath;
-    public Queen(Color color) {
-        super(color, "/images/queen");
+    public Queen(Color color, int x, int y) {
+        super(color, "/images/queen", x, y);
         this.type = FigureType.QUEEN;
 
     }
     @Override
-    public boolean CheckMove(int row, int col) {
+    public boolean CheckMove(int x, int y, Figure[][] board) {
         return false;
     }
 }

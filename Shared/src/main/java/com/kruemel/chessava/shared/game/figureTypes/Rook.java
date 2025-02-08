@@ -7,13 +7,13 @@ import java.awt.Color;
 
 public class Rook extends Figure {
 
-    public Rook(Color color) {
-        super(color, "/images/rook");
+    public Rook(Color color, int x, int y) {
+        super(color, "/images/rook", x, y);
         this.type = FigureType.ROOK;
 
     }
     @Override
-    public boolean CheckMove(int row, int col) {
+    public boolean CheckMove(int x, int y, Figure[][] board) {
         return false;
     }
 }

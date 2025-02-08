@@ -9,6 +9,11 @@ public class Board {
 
     GamePanel gamePanel;
 
+    public int clickedFieldX = -1;
+    public int clickedFieldY = -1;
+
+    public Figure selectedFigure = null;
+
     public Board(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }
@@ -16,20 +21,29 @@ public class Board {
     public void Paint(Graphics2D g2d){
         paintBackground(g2d);
         paintFigures(g2d);
+        markClickedField(g2d);
     }
 
+    public void markClickedField(Graphics2D g2d){
+        if(clickedFieldX == -1 || clickedFieldY == -1) return;
+        g2d.setColor(Color.GREEN);
+        g2d.setStroke(new BasicStroke(10));
+        g2d.drawRect(clickedFieldX * gamePanel.tileSize, clickedFieldY * gamePanel.tileSize, gamePanel.tileSize, gamePanel.tileSize);
+        clickedFieldX = -1;
+        clickedFieldY = -1;
+
+    }
+
+
     private void paintFigures(Graphics2D g2d){
-        int distance = gamePanel.gamePanelSize / 8;
-        int size = gamePanel.gamePanelSize / 8;
         for(int i = 0; i < figures.length; i++){
             for (int j = 0; j < figures[i].length; j++) {
                 Figure figure = figures[i][j];
                 if(figure == null){
                     continue;
                 }
-                System.out.println(figure.colorToString());
 
-                g2d.drawImage(figure.image, distance * i, distance * j, size, size, null);
+                g2d.drawImage(figure.image, gamePanel.tileSize * i, gamePanel.tileSize * j, gamePanel.tileSize, gamePanel.tileSize, null);
             }
         }
     }

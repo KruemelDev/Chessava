@@ -71,6 +71,11 @@ public class InstructionListener implements Runnable{
                     gamePanel.board.figures = figureStringToFigures(figuresString);
                     gamePanel.repaint();
                     break;
+                case CURRENT_PLAYER:
+                    name = packet.getData();
+                    gamePanel.currentPlayerName = name;
+                    System.out.println("current player: " + name);
+                    break;
                 case ERROR:
                     MainFrameManager.instance.ShowPopupInfo(packet.getData());
                     break;
@@ -79,6 +84,7 @@ public class InstructionListener implements Runnable{
 
         }
     }
+
     private Figure[][] figureStringToFigures(String figuresString){
         String[] figuresSplit = figuresString.split("\\|");
 
@@ -96,8 +102,8 @@ public class InstructionListener implements Runnable{
 
                  FigureType figureType = FigureType.valueOf(figureColorSplit[0].toUpperCase());
                  Color color = getFigureColor(figureColorSplit[1]);
-                 if (color == null) throw new RuntimeException(); // TODO LOGIC TO END GAME
-                 Figure figure = figureType.createInstance(color);
+                 if (color == null) connectionHandler.ResetToGameModeSelectionScreen("No color found for figure");
+                 Figure figure = figureType.createInstance(color, j, i);
                  figures[j][i] = figure;
              }
          }

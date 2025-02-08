@@ -6,14 +6,14 @@ import com.kruemel.chessava.shared.game.FigureType;
 import java.awt.Color;
 
 public class Knight extends Figure {
-    public Knight(Color color) {
-        super(color, "/images/knight");
+    public Knight(Color color, int x, int y) {
+        super(color, "/images/knight", x , y);
         this.type = FigureType.KNIGHT;
 
     }
 
     @Override
-    public boolean CheckMove(int row, int col) {
+    public boolean CheckMove(int x, int y, Figure[][] board) {
         return false;
     }
 }

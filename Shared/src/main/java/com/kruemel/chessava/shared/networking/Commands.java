@@ -9,6 +9,8 @@ public enum Commands {
     BATTLE_DECLINE("BattleDecline"),
     START_GAME("StartGame"),
     SET_FIGURES("SetFigures"),
+    MOVE_FIGURE("MoveFigure"),
+    CURRENT_PLAYER("CurrentPlayer"),
     ERROR("Error");
 
     private final String command;

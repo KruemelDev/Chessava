@@ -1,7 +1,9 @@
 package com.kruemel.chessava.server.clientHandling;
 
 import com.kruemel.chessava.server.Server;
+import com.kruemel.chessava.server.game.Game;
 
+import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,6 +23,8 @@ public class Client {
     Server server;
 
     public boolean inGame;
+    public Game game;
+    public Color gameColor;
 
     public Client(String name, Socket socket, Server server) {
         this.name = name;

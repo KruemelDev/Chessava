@@ -10,15 +10,17 @@ import java.util.Objects;
 public abstract class Figure {
 
     public Color color;
-    public int row, col;
+    public int x, y;
     public FigureType type;
 
     public Image image;
     public String imageHalfPath;
 
-    public Figure(Color color, String imagePath) {
+    public Figure(Color color, String imagePath, int x, int y) {
         this.color = color;
         this.imageHalfPath = imagePath + "_" + colorToString() + ".png";
+        this.x = x;
+        this.y = y;
 
         loadImage();
 
@@ -41,5 +43,5 @@ public abstract class Figure {
         return null;
     }
 
-    public abstract boolean CheckMove(int row, int col);
+    public abstract boolean CheckMove(int x, int y, Figure[][] board);
 }

@@ -1,8 +1,12 @@
 package com.kruemel.chessava.server.game;
 
 import com.kruemel.chessava.server.clientHandling.Client;
+import com.kruemel.chessava.shared.game.Figure;
 import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Util;
+
+import java.awt.*;
+import java.util.Random;
 
 public class Game {
 
@@ -10,6 +14,8 @@ public class Game {
     public Client[] players;
 
     public Board board;
+
+    public Client currentPlayer;
 
     public Game(Client player1, Client player2) {
         this.player1 = player1;
@@ -20,8 +26,45 @@ public class Game {
     }
     public void InitGame(){
         setPlayerInGame();
+        initPlayerColors();
         sendGameStart();
+        SendCurrentPlayer();
         board.SendFigures();
+    }
+    private void initPlayerColors(){
+        Random random = new Random();
+        int result = random.nextInt(0, 1);
+
+        if (result == 0){
+            this.player1.gameColor = Color.WHITE;
+            this.player2.gameColor = Color.BLACK;
+            this.currentPlayer = player1;
+        }
+        else if (result == 1){
+            this.player2.gameColor = Color.WHITE;
+            this.player1.gameColor = Color.BLACK;
+            this.currentPlayer = player2;
+        }
+    }
+
+    public void MoveFigure(int currentX, int currentY, int destinationX, int destinationY){
+        Figure figure = board.figures[currentY][currentX];
+        if (figure == null) return;
+        if(figure.CheckMove(destinationX, destinationY, board.figures)){
+            board.ApplyMove(figure, destinationX, destinationY);
+            board.SendFigures();
+            NextPlayer();
+            SendCurrentPlayer();
+        }
+
+    }
+    public void NextPlayer(){
+        if(this.currentPlayer == player1) currentPlayer = player2;
+        else currentPlayer = player1;
+    }
+
+    public void SendCurrentPlayer(){
+        this.currentPlayer.WriteMessage(Util.dataToJson(Commands.CURRENT_PLAYER.getValue(), this.currentPlayer.name));
     }
 
     private void sendGameStart(){
@@ -31,8 +74,10 @@ public class Game {
     }
 
     private void setPlayerInGame(){
-        this.player1.inGame = true;
-        this.player2.inGame = true;
+        for (Client player : players) {
+            player.inGame = true;
+            player.game = this;
+        }
     }
 
 }
