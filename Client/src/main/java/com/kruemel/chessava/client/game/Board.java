@@ -1,5 +1,6 @@
 package com.kruemel.chessava.client.game;
 
+import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.shared.game.Figure;
 
 import java.awt.*;
@@ -14,6 +15,8 @@ public class Board {
 
     public Figure selectedFigure = null;
 
+    private Color currentColor = Color.WHITE;
+
     public Board(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }
@@ -22,9 +25,10 @@ public class Board {
         paintBackground(g2d);
         paintFigures(g2d);
         markClickedField(g2d);
+        // TODO implement display current player
     }
 
-    public void markClickedField(Graphics2D g2d){
+    private void markClickedField(Graphics2D g2d){
         if(clickedFieldX == -1 || clickedFieldY == -1) return;
         g2d.setColor(Color.GREEN);
         g2d.setStroke(new BasicStroke(10));
@@ -33,19 +37,16 @@ public class Board {
         clickedFieldY = -1;
 
     }
-
-
     private void paintFigures(Graphics2D g2d){
-        for(int i = 0; i < figures.length; i++){
-            for (int j = 0; j < figures[i].length; j++) {
-                Figure figure = figures[i][j];
-                if(figure == null){
-                    continue;
-                }
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Figure figure = figures[y][x];
+                if (figure == null) continue;
+                g2d.drawImage(figure.image, gamePanel.tileSize * x, gamePanel.tileSize * y, gamePanel.tileSize, gamePanel.tileSize, null);
 
-                g2d.drawImage(figure.image, gamePanel.tileSize * i, gamePanel.tileSize * j, gamePanel.tileSize, gamePanel.tileSize, null);
             }
         }
+
     }
 
     private void paintBackground(Graphics2D g2d) {
@@ -58,9 +59,9 @@ public class Board {
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if ((x + y) % 2 == 0) {
-                    g2d.setColor(brown);
-                } else {
                     g2d.setColor(white);
+                } else {
+                    g2d.setColor(brown);
                 }
                 g2d.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
             }

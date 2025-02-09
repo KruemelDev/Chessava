@@ -8,8 +8,6 @@ import com.kruemel.chessava.shared.networking.Util;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -44,35 +42,28 @@ public class GamePanel extends JPanel {
     public void addMouseListener() {
         this.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 super.mouseClicked(e);
                 handleMouseEvent(e);
 
             }
         });
     }
-    private long lastClickTime = System.currentTimeMillis();
     private void handleMouseEvent(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
+            e.consume();
             float x = getClickedPos(e.getX());
             float y = getClickedPos(e.getY());
 
-            long now = System.currentTimeMillis();
-            if (System.currentTimeMillis() - lastClickTime > 50) {
-                lastClickTime = now;
-                System.out.println("mark");
-                markField((int) x,(int) y);
-
-            }
+            markField((int) x,(int) y);
 
         }
-        else if (e.getButton() == MouseEvent.BUTTON3) {
-            System.out.println("rechts click");
-
+        else if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
+            e.consume();
             placeFigure((int) getClickedPos(e.getX()), (int) getClickedPos(e.getY()));
         }
     }
-    private Player getCurrentPlayer() {
+    public Player GetCurrentPlayer() {
         if (currentPlayerName == null) return null;
         for (Player player : players) {
             if (player.name.equals(currentPlayerName)) {
@@ -84,38 +75,25 @@ public class GamePanel extends JPanel {
 
     private void placeFigure(int x, int y) {
         if(board.selectedFigure == null) return;
+        Player player = GetCurrentPlayer();
+        if(player == null) return;
+        if (board.selectedFigure.color != player.color) return;
         if (board.selectedFigure.CheckMove(x, y, board.figures)) {
-            Player player = getCurrentPlayer();
-            if (player == null) return;
-            // TODO fix sending twice
             player.connectionHandler.WriteMessage(Util.dataToJson(Commands.MOVE_FIGURE.getValue(), board.selectedFigure.x + "|" + board.selectedFigure.y + "|" + x + "|" + y));
-
         }
     }
-
-
-    private int previousX = -1;
-    private int previousY = -1;
     private void markField(int x, int y){
-
-        if (x == previousX && y == previousY) {
-            board.selectedFigure = null;
-            repaint();
-            return;
-        }
-        previousX = x;
-        previousY = y;
-
         board.clickedFieldX = x;
         board.clickedFieldY = y;
-        board.selectedFigure = board.figures[x][y];
+        board.selectedFigure = board.figures[y][x];
         repaint();
     }
 
     private float getClickedPos(float pos) {
-        float clickedPos = (pos / 800) * 8;
-        return Math.round(clickedPos);
-
+        float clickedPos = (pos / gamePanelSize) * ((float) gamePanelSize / 100);
+        float rounded = Math.round(clickedPos);
+        if (rounded == 8) rounded = 7;
+        return rounded;
     }
 
     private void handleGameMode(GameMode gameMode) {
@@ -123,7 +101,6 @@ public class GamePanel extends JPanel {
         switch (gameMode) {
             case SINGLE_PLAYER:
                 int singlePlayerPort = port + 2;
-
                 startServerIfPossible(singlePlayerPort);
                 initNewPlayer(singlePlayerIp, singlePlayerPort, 2);
                 break;

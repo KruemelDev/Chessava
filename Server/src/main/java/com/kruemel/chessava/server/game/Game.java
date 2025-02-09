@@ -26,8 +26,9 @@ public class Game {
     }
     public void InitGame(){
         setPlayerInGame();
-        initPlayerColors();
         sendGameStart();
+        initPlayerColors();
+        sendPlayerColors();
         SendCurrentPlayer();
         board.SendFigures();
     }
@@ -47,10 +48,23 @@ public class Game {
         }
     }
 
+    private void sendPlayerColors(){
+        for (Client player : players) {
+            if (player.gameColor == Color.BLACK) {
+                player.WriteMessage(Util.dataToJson(Commands.GAME_COLOR.getValue(), "black".toLowerCase()));
+            } else if (player.gameColor == Color.WHITE) {
+                player.WriteMessage(Util.dataToJson(Commands.GAME_COLOR.getValue(), "white".toLowerCase()));
+            }
+
+        }
+    }
+
     public void MoveFigure(int currentX, int currentY, int destinationX, int destinationY){
         Figure figure = board.figures[currentY][currentX];
         if (figure == null) return;
+        if (figure.color != this.currentPlayer.gameColor) return;
         if(figure.CheckMove(destinationX, destinationY, board.figures)){
+            figure.moved = true;
             board.ApplyMove(figure, destinationX, destinationY);
             board.SendFigures();
             NextPlayer();

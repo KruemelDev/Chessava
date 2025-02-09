@@ -53,26 +53,31 @@ public class InstructionListener implements Runnable{
                     }
                     break;
                 case BATTLE_REQUEST:
-                    String name = packet.getData();
-                    if (name.isEmpty()) break;
-                    if(!gamePanel.BattleRequest(name)){
-                        this.connectionHandler.WriteMessage(Util.dataToJson(Commands.BATTLE_DECLINE.getValue(), name));
+                    String opponentName = packet.getData();
+                    if (opponentName.isEmpty()) break;
+                    if(!gamePanel.BattleRequest(opponentName)){
+                        this.connectionHandler.WriteMessage(Util.dataToJson(Commands.BATTLE_DECLINE.getValue(), opponentName));
                     } else{
-                        this.connectionHandler.WriteMessage(Util.dataToJson(Commands.BATTLE_ACCEPT.getValue(), name));
+                        this.connectionHandler.WriteMessage(Util.dataToJson(Commands.BATTLE_ACCEPT.getValue(), opponentName));
                     }
                     break;
                 case START_GAME:
                     gamePanel.repaint();
                     gamePanel.addMouseListener();
                     break;
+                case GAME_COLOR:
+                    String color = packet.getData();
+                    addColorToPlayer(color);
+                    break;
                 case SET_FIGURES:
                     if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
                     String figuresString = packet.getData();
+                    gamePanel.board.selectedFigure = null;
                     gamePanel.board.figures = figureStringToFigures(figuresString);
                     gamePanel.repaint();
                     break;
                 case CURRENT_PLAYER:
-                    name = packet.getData();
+                    String name = packet.getData();
                     gamePanel.currentPlayerName = name;
                     System.out.println("current player: " + name);
                     break;
@@ -85,29 +90,38 @@ public class InstructionListener implements Runnable{
         }
     }
 
+    private void addColorToPlayer(String color){
+        if(color.isEmpty()) return;
+        if (color.equals("black")){
+            this.connectionHandler.player.color = Color.BLACK;
+        } else if (color.equals("white")){
+            this.connectionHandler.player.color = Color.WHITE;
+        }
+
+    }
+
     private Figure[][] figureStringToFigures(String figuresString){
         String[] figuresSplit = figuresString.split("\\|");
 
         Figure[][] figures = new Figure[8][8];
-         for(int i = 0; i < 8; i++){
-             for(int j = 0; j < 8; j++){
-                 String currentString = figuresSplit[i * 8 + j];
+         for(int y = 0; y < 8; y++){
+             for(int x = 0; x < 8; x++){
+                 int index = y * 8 + x;
+                 String currentString = figuresSplit[index];
 
                  if(currentString.isEmpty() || currentString.equals("null")){
-                     figures[j][i] = null;
+                     figures[y][x] = null;
                      continue;
                  }
-
                  String[] figureColorSplit = currentString.split("\\(");
 
                  FigureType figureType = FigureType.valueOf(figureColorSplit[0].toUpperCase());
                  Color color = getFigureColor(figureColorSplit[1]);
                  if (color == null) connectionHandler.ResetToGameModeSelectionScreen("No color found for figure");
-                 Figure figure = figureType.createInstance(color, j, i);
-                 figures[j][i] = figure;
+                 Figure figure = figureType.createInstance(color, x, y);
+                 figures[y][x] = figure;
              }
          }
-
         return figures;
     }
 

@@ -8,6 +8,7 @@ public enum Commands {
     BATTLE_ACCEPT("BattleAccept"),
     BATTLE_DECLINE("BattleDecline"),
     START_GAME("StartGame"),
+    GAME_COLOR("GameColor"),
     SET_FIGURES("SetFigures"),
     MOVE_FIGURE("MoveFigure"),
     CURRENT_PLAYER("CurrentPlayer"),

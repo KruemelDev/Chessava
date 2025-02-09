@@ -16,6 +16,8 @@ public abstract class Figure {
     public Image image;
     public String imageHalfPath;
 
+    public boolean moved = false;
+
     public Figure(Color color, String imagePath, int x, int y) {
         this.color = color;
         this.imageHalfPath = imagePath + "_" + colorToString() + ".png";

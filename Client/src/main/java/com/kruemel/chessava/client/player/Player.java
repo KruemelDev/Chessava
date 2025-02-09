@@ -4,6 +4,7 @@ import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.client.MainFrameManager;
 import com.kruemel.chessava.shared.networking.Util;
 
+import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
@@ -18,7 +19,9 @@ public class Player {
     public DataOutputStream out;
 
     public String name;
+    public Color color;
     GamePanel gamePanel;
+
 
     public Player(String ip, int port, String name, GamePanel gamePanel) {
         this.ip = ip;
@@ -40,8 +43,5 @@ public class Player {
         }
 
         connectionHandler.WriteMessage(Util.dataToJson("Name", this.name));
-
-        // TODO add option for pop to enter ip + port manualy
-
     }
 }

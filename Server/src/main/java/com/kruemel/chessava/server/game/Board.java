@@ -27,6 +27,9 @@ public class Board {
 
     public void ApplyMove(Figure figure, int destinationX, int destinationY) {
         figures[figure.y][figure.x] = null;
+
+        figure.x = destinationX;
+        figure.y = destinationY;
         figures[destinationY][destinationX] = figure;
     }
 
