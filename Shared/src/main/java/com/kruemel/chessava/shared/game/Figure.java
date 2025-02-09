@@ -1,6 +1,7 @@
 package com.kruemel.chessava.shared.game;
 
 import com.kruemel.chessava.shared.game.figureTypes.Bishop;
+import com.kruemel.chessava.shared.game.figureTypes.King;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -44,6 +45,17 @@ public abstract class Figure {
         }
         return null;
     }
-
+    public boolean HandleKingDanger(boolean canMove, Figure[][] board){
+        King king = King.getKing(this.color, board);
+        if(king == null) return false;
+        if (king.InDanger(king.x, king.y, board)) {
+            if(canMove) {
+                Figure[][] tempBoard = board.clone();
+                tempBoard[y][x] = this;
+                return king.InDanger(king.x, king.y, tempBoard);
+            }
+        }
+        return false;
+    }
     public abstract boolean CheckMove(int x, int y, Figure[][] board);
 }

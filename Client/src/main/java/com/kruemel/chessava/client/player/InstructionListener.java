@@ -72,9 +72,9 @@ public class InstructionListener implements Runnable{
                 case SET_FIGURES:
                     if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
                     String figuresString = packet.getData();
-                    gamePanel.board.selectedFigure = null;
                     gamePanel.board.figures = figureStringToFigures(figuresString);
                     gamePanel.repaint();
+                    gamePanel.board.selectedFigure = null;
                     break;
                 case CURRENT_PLAYER:
                     String name = packet.getData();
