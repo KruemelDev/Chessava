@@ -13,6 +13,11 @@ public class Knight extends Figure {
     }
 
     @Override
+    public boolean CheckAttack(int x, int y, Figure[][] board) {
+        return false;
+    }
+
+    @Override
     public boolean CheckMove(int x, int y, Figure[][] board) {
         return false;
     }

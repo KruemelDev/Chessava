@@ -5,7 +5,6 @@ import com.kruemel.chessava.shared.game.FigureType;
 
 import java.awt.Color;
 
-
 public class King extends Figure {
     public King(Color color, int x, int y) {
         super(color, "/images/king", x, y);
@@ -13,8 +12,7 @@ public class King extends Figure {
     }
 
     @Override
-    public boolean CheckMove(int x, int y, Figure[][] board) {
-        Figure figure = board[y][x];
+    public boolean CheckAttack(int x, int y, Figure[][] board) {
         boolean topMove;
         boolean topLeftMove;
         boolean topRightMove;
@@ -33,8 +31,15 @@ public class King extends Figure {
         leftMove = this.x - 1 == x && this.y == y;
         rightMove = (this.x + 1 == x && this.y == y);
 
-        boolean move = (topMove || topLeftMove || topRightMove || downMove || downLeftMove || downRightMove || leftMove || rightMove) && checkOpponentFigures(x, y, board);
+        return topMove || topLeftMove || topRightMove || downMove || downLeftMove || downRightMove || leftMove || rightMove;
+    }
 
+    @Override
+    public boolean CheckMove(int x, int y, Figure[][] board) {
+        Figure figure = board[y][x];
+        boolean canMove = CheckAttack(x, y, board);
+
+        boolean move = canMove && checkOpponentFigures(x, y, board);
         if(figure != null) return move && this.color != figure.color;
         else return move;
 
@@ -44,30 +49,33 @@ public class King extends Figure {
     }
 
     public boolean InDanger(int posX, int posY, Figure[][] board) {
-        boolean kingInDanger = true;
-        for(int y = 0; y < board.length; y++) {
-            for(int x = 0; x < board.length; x++) {
-                Figure figure = board[y][x];
-                if(figure == null) continue;
-                if (figure.type == FigureType.KING) continue;
+        Figure[][] tempBoard = new Figure[board.length][];
+        for (int i = 0; i < board.length; i++) {
+            tempBoard[i] = board[i].clone();
+        }
+        tempBoard[posY][posX] = new King(this.color, posX, posY);
 
-                if(figure.type == FigureType.PAWN){
-                    Pawn pawn = (Pawn) figure;
-                    King tempKing = new King(this.color, posX, posY);
-                    if(pawn.CheckDiagonal(posX, posY, tempKing)) return true;
+        for (Figure[] row : board) {
+            for (Figure enemy : row) {
+                if (enemy == null || enemy.type == FigureType.KING || enemy.color == this.color) continue;
+                // TODO create temp king at move pos to check if king is in danger when he moves
+
+                if (enemy.CheckAttack(posX, posY, tempBoard)) {
+                    for (Figure[] allyRow : board) {
+                        for (Figure ally : allyRow) {
+                            if (ally == null || ally.type == FigureType.KING || ally.color != this.color) continue;
+                            if (!ally.CheckAttack(enemy.x, enemy.y, board)) return true;
+                        }
+                    }
                 }
-                else{
-                    if(figure.CheckMove(posX, posY, board)) return true;
-                }
-                kingInDanger = false;
             }
         }
-        return kingInDanger;
+        return false;
     }
 
-    private boolean checkOpponentKingDistance(int destinationX, int destinationY, Figure[][] board){
-        for(int y = 0; y < 8; y++){
-            for (int x = 0; x < 8; x++){
+    private boolean checkOpponentKingDistance ( int destinationX, int destinationY, Figure[][] board){
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
                 Figure figure = board[y][x];
                 if (figure == null) continue;
                 if (figure.type == FigureType.KING && figure.color != this.color) {
@@ -78,9 +86,9 @@ public class King extends Figure {
         }
         return false;
     }
-    public static King getKing(Color color, Figure[][] board) {
-        for (int y = 0; y < board.length; y++){
-            for (int x = 0; x < board.length; x++){
+    public static King getKing (Color color, Figure[][]board){
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board.length; x++) {
                 Figure figure = board[y][x];
                 if (figure == null) continue;
                 if (figure.type == FigureType.KING && figure.color == color) return (King) figure;

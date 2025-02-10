@@ -63,6 +63,7 @@ public class Game {
         Figure figure = board.figures[currentY][currentX];
         if (figure == null) return;
         if (figure.color != this.currentPlayer.gameColor) return;
+        if (currentX == destinationX && currentY == destinationY) return;
         if(figure.CheckMove(destinationX, destinationY, board.figures)){
             figure.moved = true;
             board.ApplyMove(figure, destinationX, destinationY);

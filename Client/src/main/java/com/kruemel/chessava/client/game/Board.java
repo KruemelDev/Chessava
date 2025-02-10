@@ -1,8 +1,6 @@
 package com.kruemel.chessava.client.game;
 
-import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.shared.game.Figure;
-
 import java.awt.*;
 
 public class Board {
@@ -15,7 +13,7 @@ public class Board {
 
     public Figure selectedFigure = null;
 
-    private Color currentColor = Color.WHITE;
+    //private Color currentColor = Color.WHITE;
 
     public Board(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -38,6 +36,7 @@ public class Board {
 
     }
     private void paintFigures(Graphics2D g2d){
+        // TODO reverse figures to current player view
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 Figure figure = figures[y][x];

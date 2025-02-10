@@ -11,8 +11,9 @@ public class Pawn extends Figure {
         this.type = FigureType.PAWN;
     }
 
-
-    public boolean CheckDiagonal(int x, int y, Figure figure) {
+    @Override
+    public boolean CheckAttack(int x, int y, Figure[][] board) {
+        Figure figure = board[y][x];
         if(color == Color.BLACK) {
             if(figure != null) {
                 return (this.y + 1 == y && (this.x + 1 == figure.x || this.x - 1 == figure.x)) && figure.color != color;
@@ -42,13 +43,13 @@ public class Pawn extends Figure {
         Figure figure = board[y][x];
 
         straightMove = CheckStraightMove(x, y, board, figure);
-        diagonalMove = CheckDiagonal(x, y, figure);
+        diagonalMove = CheckAttack(x, y, board);
 
         boolean canMove = straightMove || diagonalMove;
 
-        boolean danger = HandleKingDanger(canMove, board);
+        boolean danger = HandleKingDanger(x, y, canMove, board);
         if(danger) System.out.println("King in danger: " + danger);
-        return (straightMove || diagonalMove) && !danger;
+        return canMove && !danger;
 
     }
 }

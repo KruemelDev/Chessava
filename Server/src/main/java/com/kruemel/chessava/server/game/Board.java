@@ -10,7 +10,7 @@ import java.awt.Color;
 
 public class Board {
     public Figure[][] figures = {
-            {new Rook(Color.BLACK, 0, 1), new Knight(Color.BLACK, 1, 0), new Bishop(Color.BLACK, 2, 0), new Queen(Color.BLACK, 3, 0), new King(Color.BLACK, 4, 0), new Bishop(Color.BLACK, 5, 0), new Knight(Color.BLACK, 6, 0), new Rook(Color.BLACK, 7, 0)},
+            {new Rook(Color.BLACK, 0, 0), new Knight(Color.BLACK, 1, 0), new Bishop(Color.BLACK, 2, 0), new Queen(Color.BLACK, 3, 0), new King(Color.BLACK, 4, 0), new Bishop(Color.BLACK, 5, 0), new Knight(Color.BLACK, 6, 0), new Rook(Color.BLACK, 7, 0)},
             {new Pawn(Color.BLACK, 0, 1), new Pawn(Color.BLACK, 1, 1), new Pawn(Color.BLACK, 2,1), new Pawn(Color.BLACK, 3, 1), new Pawn(Color.BLACK, 4, 1), new Pawn(Color.BLACK, 5, 1), new Pawn(Color.BLACK, 6, 1), new Pawn(Color.BLACK, 7, 1)},
             {null, null, null, null, null, null, null, null},
             {null, null, null, null, null, null, null, null},

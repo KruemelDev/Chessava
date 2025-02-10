@@ -5,18 +5,13 @@ import com.kruemel.chessava.client.MainFrameManager;
 import com.kruemel.chessava.shared.networking.Util;
 
 import java.awt.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 
 public class Player {
 
     public ConnectionHandler connectionHandler;
 
-    private String ip;
-    private int port;
-
-    public DataInputStream in;
-    public DataOutputStream out;
+    private final String ip;
+    private final int port;
 
     public String name;
     public Color color;

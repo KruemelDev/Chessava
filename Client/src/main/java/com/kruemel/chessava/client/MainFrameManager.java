@@ -16,7 +16,6 @@ public class MainFrameManager {
 
 
     public static MainFrameManager instance;
-    public Color backgroundColor = new Color(170, 160, 110);
 
     public MainFrameManager(String mainFrameTitle, int screenWidth, int screenHeight) {
         instance = this;
@@ -166,7 +165,7 @@ public class MainFrameManager {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(Box.createVerticalGlue());
 
-        JButton startSinglePlayerButton = new JButton("singlePlayer");
+        JButton startSinglePlayerButton = new JButton("Local");
         startSinglePlayerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startSinglePlayerButton.addActionListener(new ActionListener() {
             @Override
@@ -177,7 +176,7 @@ public class MainFrameManager {
         });
         panel.add(startSinglePlayerButton);
 
-        JButton startMultiPlayerButton = new JButton("multiPlayer");
+        JButton startMultiPlayerButton = new JButton("Online");
         startMultiPlayerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         startMultiPlayerButton.addActionListener(new ActionListener() {
             @Override

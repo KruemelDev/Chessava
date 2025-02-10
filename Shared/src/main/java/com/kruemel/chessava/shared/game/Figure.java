@@ -45,17 +45,23 @@ public abstract class Figure {
         }
         return null;
     }
-    public boolean HandleKingDanger(boolean canMove, Figure[][] board){
+    public boolean HandleKingDanger(int x, int y, boolean canMove, Figure[][] board){
         King king = King.getKing(this.color, board);
         if(king == null) return false;
         if (king.InDanger(king.x, king.y, board)) {
             if(canMove) {
-                Figure[][] tempBoard = board.clone();
+                // Depp copy of board for 2d array
+                Figure[][] tempBoard = new Figure[board.length][];
+                for (int i = 0; i < board.length; i++) {
+                    tempBoard[i] = board[i].clone();
+                }
                 tempBoard[y][x] = this;
                 return king.InDanger(king.x, king.y, tempBoard);
             }
         }
         return false;
     }
+    // Do not use CheckAttack outside this package
+    public abstract boolean CheckAttack(int x, int y, Figure[][] board);
     public abstract boolean CheckMove(int x, int y, Figure[][] board);
 }

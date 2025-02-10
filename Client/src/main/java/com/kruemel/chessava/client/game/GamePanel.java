@@ -122,7 +122,6 @@ public class GamePanel extends JPanel {
         for (Player player : players) {
             if (player == null) continue;
             player.connectionHandler.SendCloseConnection("Destroy");
-            player = null;
         }
     }
 
