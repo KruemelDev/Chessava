@@ -13,21 +13,21 @@ public class Rook extends Figure {
 
     }
     @Override
-    public boolean CheckAttack(int targetX, int targetY, Figure[][] board) {
-        if (this.x != targetX && this.y != targetY) {
+    public boolean CheckAttack(int x, int y, Figure[][] board) {
+        if (this.x != x && this.y != y) {
             return false;
         }
-        Figure figure = board[targetY][targetX];
+        Figure figure = board[y][x];
         if (figure != null) {
             if(this.color == figure.color) return false;
         }
 
-        int stepX = Integer.compare(targetX, this.x);
-        int stepY = Integer.compare(targetY, this.y);
+        int stepX = Integer.compare(x, this.x);
+        int stepY = Integer.compare(y, this.y);
 
         int currentX = this.x + stepX;
         int currentY = this.y + stepY;
-        while (currentX != targetX || currentY != targetY) {
+        while (currentX != x || currentY != y) {
             if (board[currentY][currentX] != null) {
                 return false;
             }
@@ -39,9 +39,9 @@ public class Rook extends Figure {
 
     @Override
     public boolean CheckMove(int x, int y, Figure[][] board) {
-
         boolean canMove = CheckAttack(x, y, board);
         boolean danger = HandleKingDanger(x, y, canMove, board);
+        if(danger) System.out.println("King in danger: " + danger);
 
         return canMove && !danger;
     }
