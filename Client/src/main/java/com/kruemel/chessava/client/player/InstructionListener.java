@@ -1,6 +1,7 @@
 package com.kruemel.chessava.client.player;
 
 import com.kruemel.chessava.client.*;
+import com.kruemel.chessava.client.game.Board;
 import com.kruemel.chessava.client.game.GameMode;
 import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.shared.networking.Commands;
@@ -67,7 +68,7 @@ public class InstructionListener implements Runnable{
                     break;
                 case GAME_COLOR:
                     String color = packet.getData();
-                    addColorToPlayer(color);
+                    handlePlayerColor(color);
                     break;
                 case SET_FIGURES:
                     if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
@@ -76,10 +77,22 @@ public class InstructionListener implements Runnable{
                     gamePanel.repaint();
                     gamePanel.board.selectedFigure = null;
                     break;
-                case CURRENT_PLAYER:
+                case NEXT_PLAYER:
                     String name = packet.getData();
+                    if (gamePanel.players[0].equals(connectionHandler.player)){
+                        gamePanel.repaint();
+                        gamePanel.board.ChangeCurrentMarkColor();
+                        //gamePanel.board.ReverseBoard();
+                    }
                     gamePanel.currentPlayerName = name;
                     System.out.println("current player: " + name);
+                    break;
+                case FIGURE_SELECT:
+                    // TODO implement figure select
+
+                    break;
+                case END_GAME:
+                    gamePanel.EndGame(packet.getData());
                     break;
                 case ERROR:
                     MainFrameManager.instance.ShowPopupInfo(packet.getData());
@@ -88,6 +101,14 @@ public class InstructionListener implements Runnable{
             }
 
         }
+    }
+
+    private void handlePlayerColor(String color) {
+        if (gamePanel.gameMode == GameMode.MULTI_PLAYER) {
+            if (color.equals("white")) MainFrameManager.instance.ShowPopupInfo("You color is white. You start the game!");
+            else if (color.equalsIgnoreCase("black")) MainFrameManager.instance.ShowPopupInfo("Your color is black. You need to wait for your opponent!");
+        }
+        addColorToPlayer(color);
     }
 
     private void addColorToPlayer(String color){

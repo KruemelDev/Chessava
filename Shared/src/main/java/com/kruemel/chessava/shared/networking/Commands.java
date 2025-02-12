@@ -11,7 +11,9 @@ public enum Commands {
     GAME_COLOR("GameColor"),
     SET_FIGURES("SetFigures"),
     MOVE_FIGURE("MoveFigure"),
-    CURRENT_PLAYER("CurrentPlayer"),
+    FIGURE_SELECT("FigureSelect"),
+    NEXT_PLAYER("NextPlayer"),
+    END_GAME("EndGame"),
     ERROR("Error");
 
     private final String command;

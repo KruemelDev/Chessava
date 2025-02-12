@@ -36,6 +36,8 @@ public class King extends Figure {
 
     @Override
     public boolean CheckMove(int x, int y, Figure[][] board) {
+        // TODO implement Rochieren
+
         Figure figure = board[y][x];
         boolean canMove = CheckAttack(x, y, board);
 
@@ -71,7 +73,7 @@ public class King extends Figure {
         return false;
     }
 
-    private boolean checkOpponentKingDistance ( int destinationX, int destinationY, Figure[][] board){
+    private boolean checkOpponentKingDistance(int destinationX, int destinationY, Figure[][] board){
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 Figure figure = board[y][x];
@@ -84,7 +86,7 @@ public class King extends Figure {
         }
         return false;
     }
-    public static King getKing (Color color, Figure[][]board){
+    public static King getKing(Color color, Figure[][]board){
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board.length; x++) {
                 Figure figure = board[y][x];

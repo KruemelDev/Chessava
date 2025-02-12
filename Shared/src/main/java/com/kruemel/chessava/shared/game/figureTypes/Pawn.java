@@ -10,7 +10,14 @@ public class Pawn extends Figure {
         super(color, "/images/pawn", x, y);
         this.type = FigureType.PAWN;
     }
-
+    
+    public boolean OnOpponentSide(){
+        if(this.color == Color.BLACK && this.y == 0) return true;
+        else if(this.color == Color.WHITE && this.y == 7) return true;
+        return false;
+    } 
+    
+    
     @Override
     public boolean CheckAttack(int x, int y, Figure[][] board) {
         Figure figure = board[y][x];

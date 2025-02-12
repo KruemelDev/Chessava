@@ -4,6 +4,7 @@ import com.kruemel.chessava.client.MainFrameManager;
 import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.server.Server;
 import com.kruemel.chessava.shared.networking.Commands;
+import com.kruemel.chessava.shared.networking.Packet;
 import com.kruemel.chessava.shared.networking.Util;
 
 import javax.swing.*;
@@ -138,7 +139,12 @@ public class GamePanel extends JPanel {
         }
     }
 
-
+    public void EndGame(String reason) {
+        MainFrameManager.instance.ShowPopupInfo(reason);
+        this.board.figures = null;
+        this.repaint();
+        this.board = new Board(this);
+    }
 
     private String askForName() {
         while(true){

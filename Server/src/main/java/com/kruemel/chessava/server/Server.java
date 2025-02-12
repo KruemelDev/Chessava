@@ -58,11 +58,6 @@ public class Server implements Runnable {
             }
     }
 
-
-    public void StartGame(Client client1, Client client2) {
-        Game game = new Game(client1, client2);
-    }
-
     public void AddClient(String name, Socket socket) {
         Client client = new Client(name, socket, this);
         client.StartInstructionListener();
@@ -100,15 +95,21 @@ public class Server implements Runnable {
     }
 
     public void RemoveClient(Client client) {
+        if (client.inGame){
+            for (Client player : client.game.players) {
+                if (!player.name.equals(client.name)){
+                    player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Opponent left the game"));
+                    player.game = null;
+                    player.inGame = false;
+                }
+            }
+        }
         this.clients.remove(client);
-        client = null;
         UpdateAvailablePlayer();
     }
 
 
     public boolean ClientAvailable(String name){
-        // TODO check other server with redis request etc.
-
         for(Client client: clients){
             if(client.name.equals(name)) return true;
         }

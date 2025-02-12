@@ -22,7 +22,7 @@ public class Game {
         this.player2 = player2;
 
         players = new Client[]{player1, player2};
-        board = new Board(players);
+        board = new Board(players, this);
     }
     public void InitGame(){
         setPlayerInGame();
@@ -34,7 +34,7 @@ public class Game {
     }
     private void initPlayerColors(){
         Random random = new Random();
-        int result = random.nextInt(0, 1);
+        int result = random.nextInt(0, 2);
 
         if (result == 0){
             this.player1.gameColor = Color.WHITE;
@@ -70,16 +70,26 @@ public class Game {
             board.SendFigures();
             NextPlayer();
             SendCurrentPlayer();
+
         }
 
     }
+    public Client GetPlayerByFigureColor(Figure figure){
+        for (Client player : players) {
+            if (figure.color == player.gameColor) return player;
+        }
+        return null;
+    }
+
     public void NextPlayer(){
         if(this.currentPlayer == player1) currentPlayer = player2;
         else currentPlayer = player1;
     }
 
     public void SendCurrentPlayer(){
-        this.currentPlayer.WriteMessage(Util.dataToJson(Commands.CURRENT_PLAYER.getValue(), this.currentPlayer.name));
+        for (Client player : players) {
+            player.WriteMessage(Util.dataToJson(Commands.NEXT_PLAYER.getValue(), this.currentPlayer.name));
+        }
     }
 
     private void sendGameStart(){

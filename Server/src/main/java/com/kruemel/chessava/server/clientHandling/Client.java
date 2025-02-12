@@ -22,6 +22,7 @@ public class Client {
 
     Server server;
 
+    public boolean figureSelect = false;
     public boolean inGame;
     public Game game;
     public Color gameColor;

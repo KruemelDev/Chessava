@@ -1,5 +1,6 @@
 package com.kruemel.chessava.client.game;
 
+import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.shared.game.Figure;
 import java.awt.*;
 
@@ -13,7 +14,7 @@ public class Board {
 
     public Figure selectedFigure = null;
 
-    //private Color currentColor = Color.WHITE;
+    private Color markColor = Color.BLACK;
 
     public Board(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -23,12 +24,34 @@ public class Board {
         paintBackground(g2d);
         paintFigures(g2d);
         markClickedField(g2d);
-        // TODO implement display current player
+    }
+
+    public void ChangeCurrentMarkColor(){
+        if(markColor == Color.GRAY) markColor = Color.BLACK;
+        else markColor = Color.GRAY;
+    }
+
+    public void ReverseBoard(){
+        Color color;
+        if (gamePanel.gameMode == GameMode.MULTI_PLAYER){
+            color = gamePanel.players[0].color;
+        }
+        else {
+            Player player  = gamePanel.GetCurrentPlayer();
+            if (player == null) return;
+            color = player.color;
+        }
+        if (color == Color.WHITE) return;
+        reverse();
+        gamePanel.repaint();
+    }
+    private void reverse(){
+
     }
 
     private void markClickedField(Graphics2D g2d){
         if(clickedFieldX == -1 || clickedFieldY == -1) return;
-        g2d.setColor(Color.GREEN);
+        g2d.setColor(markColor);
         g2d.setStroke(new BasicStroke(10));
         g2d.drawRect(clickedFieldX * gamePanel.tileSize, clickedFieldY * gamePanel.tileSize, gamePanel.tileSize, gamePanel.tileSize);
         clickedFieldX = -1;

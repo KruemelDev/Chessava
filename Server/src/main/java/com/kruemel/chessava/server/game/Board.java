@@ -1,6 +1,7 @@
 package com.kruemel.chessava.server.game;
 
 import com.kruemel.chessava.server.clientHandling.Client;
+import com.kruemel.chessava.shared.game.FigureType;
 import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Util;
 import com.kruemel.chessava.shared.game.Figure;
@@ -21,8 +22,10 @@ public class Board {
     };
 
     Client[] players;
-    public Board(Client[] players) {
+    Game game;
+    public Board(Client[] players, Game game) {
         this.players = players;
+        this.game = game;
     }
 
     public void ApplyMove(Figure figure, int destinationX, int destinationY) {
@@ -31,6 +34,21 @@ public class Board {
         figure.x = destinationX;
         figure.y = destinationY;
         figures[destinationY][destinationX] = figure;
+    }
+
+    public void HandlePawnOpponentSide(Figure figure) {
+        if (figure.type != FigureType.PAWN) return;
+
+        Pawn pawn = (Pawn) figure;
+        if(pawn.OnOpponentSide()){
+            Client client = this.game.GetPlayerByFigureColor(pawn);
+            client.figureSelect = true;
+            sendFigureSelectionOffer(client);
+        }
+    }
+
+    private void sendFigureSelectionOffer(Client client) {
+        client.WriteMessage(Util.dataToJson(Commands.FIGURE_SELECT.getValue()));
     }
 
     public void SendFigures(){
