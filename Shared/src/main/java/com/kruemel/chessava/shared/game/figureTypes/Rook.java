@@ -14,27 +14,7 @@ public class Rook extends Figure {
     }
     @Override
     public boolean CheckAttack(int x, int y, Figure[][] board) {
-        if (this.x != x && this.y != y) {
-            return false;
-        }
-        Figure figure = board[y][x];
-        if (figure != null) {
-            if(this.color == figure.color) return false;
-        }
-
-        int stepX = Integer.compare(x, this.x);
-        int stepY = Integer.compare(y, this.y);
-
-        int currentX = this.x + stepX;
-        int currentY = this.y + stepY;
-        while (currentX != x || currentY != y) {
-            if (board[currentY][currentX] != null) {
-                return false;
-            }
-            currentX += stepX;
-            currentY += stepY;
-        }
-        return true;
+        return CheckStraightInfiniteMovement(x, y, board);
     }
 
     @Override

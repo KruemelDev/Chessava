@@ -55,13 +55,11 @@ public class King extends Figure {
         }
         tempBoard[posY][posX] = new King(this.color, posX, posY);
 
-        for (Figure[] row : board) {
+        for (Figure[] row : tempBoard) {
             for (Figure enemy : row) {
                 if (enemy == null || enemy.type == FigureType.KING || enemy.color == this.color) continue;
-                // TODO create temp king at move pos to check if king is in danger when he moves
-
                 if (enemy.CheckAttack(posX, posY, tempBoard)) {
-                    for (Figure[] allyRow : board) {
+                    for (Figure[] allyRow : tempBoard) {
                         for (Figure ally : allyRow) {
                             if (ally == null || ally.type == FigureType.KING || ally.color != this.color) continue;
                             if (!ally.CheckAttack(enemy.x, enemy.y, board)) return true;

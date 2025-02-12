@@ -14,7 +14,7 @@ public class Bishop extends Figure {
 
     @Override
     public boolean CheckAttack(int x, int y, Figure[][] board) {
-        return false;
+        return CheckDiagonalInfiniteMovement(x, y, board);
     }
 
     @Override

@@ -61,6 +61,53 @@ public abstract class Figure {
         }
         return false;
     }
+
+    public boolean CheckStraightInfiniteMovement(int x, int y, Figure[][] board){
+        if (this.x != x && this.y != y) {
+            return false;
+        }
+        Figure figure = board[y][x];
+        if (figure != null) if(this.color == figure.color) return false;
+
+        int stepX = Integer.compare(x, this.x);
+        int stepY = Integer.compare(y, this.y);
+
+        int currentX = this.x + stepX;
+        int currentY = this.y + stepY;
+        while (currentX != x || currentY != y) {
+            if (board[currentY][currentX] != null) {
+                return false;
+            }
+            currentX += stepX;
+            currentY += stepY;
+        }
+        return true;
+    }
+
+    public boolean CheckDiagonalInfiniteMovement(int x, int y, Figure[][] board){
+        int yDiff = Math.abs(this.y - y);
+        int xDiff = Math.abs(this.x - x);
+        if (yDiff != xDiff) return false;
+
+        Figure figure = board[y][x];
+        if (figure != null) if (this.color == figure.color) return false;
+
+        int stepX = Integer.compare(x, this.x);
+        int stepY = Integer.compare(y, this.y);
+
+        int currentX = this.x + stepX;
+        int currentY = this.y + stepY;
+        while(currentX != x && currentY != y) {
+            if (board[currentY][currentX] != null) {
+                return false;
+            }
+            currentX += stepX;
+            currentY += stepY;
+        }
+        return true;
+    }
+
+
     // Do not use CheckAttack outside this package
     public abstract boolean CheckAttack(int x, int y, Figure[][] board);
     public abstract boolean CheckMove(int x, int y, Figure[][] board);
