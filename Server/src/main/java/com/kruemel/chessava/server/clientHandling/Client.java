@@ -2,6 +2,7 @@ package com.kruemel.chessava.server.clientHandling;
 
 import com.kruemel.chessava.server.Server;
 import com.kruemel.chessava.server.game.Game;
+import com.kruemel.chessava.shared.game.Figure;
 
 import java.awt.*;
 import java.io.DataInputStream;
@@ -18,11 +19,11 @@ public class Client {
 
     public Client acceptClient;
 
-    private InstructionListener instructionListener;
-
     Server server;
 
-    public boolean figureSelect = false;
+    public boolean figureSelectActive = false;
+    public Figure selectFigure;
+
     public boolean inGame;
     public Game game;
     public Color gameColor;
@@ -57,7 +58,7 @@ public class Client {
     }
 
     public void StartInstructionListener(){
-        instructionListener = new InstructionListener(this, server);
+        InstructionListener instructionListener = new InstructionListener(this, server);
         new Thread(instructionListener).start();
     }
 

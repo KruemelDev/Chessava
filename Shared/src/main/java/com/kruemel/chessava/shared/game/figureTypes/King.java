@@ -72,7 +72,6 @@ public class King extends Figure {
         }
         return false;
     }
-
     private boolean checkOpponentKingDistance(int destinationX, int destinationY, Figure[][] board){
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
@@ -86,7 +85,19 @@ public class King extends Figure {
         }
         return false;
     }
-    public static King getKing(Color color, Figure[][]board){
+//    public boolean CheckChessMate(Figure[][] board){
+//        return this.InDanger(this.x, this.y, board) &&
+//                this.InDanger(this.x - 1, this.y, board) &&
+//                this.InDanger(this.x + 1, this.y, board) &&
+//                this.InDanger(this.x, this.y - 1, board) &&
+//                this.InDanger(this.x, this.y + 1, board) &&
+//                this.InDanger(this.x - 1, this.y - 1, board) &&
+//                this.InDanger(this.x - 1, this.y + 1, board) &&
+//                this.InDanger(this.x + 1, this.y - 1, board) &&
+//                this.InDanger(this.x + 1, this.y + 1, board);
+//    }
+
+    public static King GetKing(Color color, Figure[][]board){
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board.length; x++) {
                 Figure figure = board[y][x];

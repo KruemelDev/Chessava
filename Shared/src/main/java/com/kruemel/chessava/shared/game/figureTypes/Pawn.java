@@ -12,8 +12,8 @@ public class Pawn extends Figure {
     }
     
     public boolean OnOpponentSide(){
-        if(this.color == Color.BLACK && this.y == 0) return true;
-        else if(this.color == Color.WHITE && this.y == 7) return true;
+        if(this.color == Color.BLACK && this.y == 7) return true;
+        else if(this.color == Color.WHITE && this.y == 0) return true;
         return false;
     } 
     

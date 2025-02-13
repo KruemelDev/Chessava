@@ -46,7 +46,7 @@ public abstract class Figure {
         return null;
     }
     public boolean HandleKingDanger(int x, int y, boolean canMove, Figure[][] board){
-        King king = King.getKing(this.color, board);
+        King king = King.GetKing(this.color, board);
         if(king == null) return false;
         if (king.InDanger(king.x, king.y, board)) {
             if(canMove) {

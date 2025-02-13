@@ -31,24 +31,6 @@ public class Board {
         else markColor = Color.GRAY;
     }
 
-    public void ReverseBoard(){
-        Color color;
-        if (gamePanel.gameMode == GameMode.MULTI_PLAYER){
-            color = gamePanel.players[0].color;
-        }
-        else {
-            Player player  = gamePanel.GetCurrentPlayer();
-            if (player == null) return;
-            color = player.color;
-        }
-        if (color == Color.WHITE) return;
-        reverse();
-        gamePanel.repaint();
-    }
-    private void reverse(){
-
-    }
-
     private void markClickedField(Graphics2D g2d){
         if(clickedFieldX == -1 || clickedFieldY == -1) return;
         g2d.setColor(markColor);

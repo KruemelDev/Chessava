@@ -4,7 +4,6 @@ import com.kruemel.chessava.client.MainFrameManager;
 import com.kruemel.chessava.client.player.Player;
 import com.kruemel.chessava.server.Server;
 import com.kruemel.chessava.shared.networking.Commands;
-import com.kruemel.chessava.shared.networking.Packet;
 import com.kruemel.chessava.shared.networking.Util;
 
 import javax.swing.*;
@@ -46,7 +45,6 @@ public class GamePanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 super.mouseClicked(e);
                 handleMouseEvent(e);
-
             }
         });
     }
@@ -106,7 +104,7 @@ public class GamePanel extends JPanel {
                 initNewPlayer(singlePlayerIp, singlePlayerPort, 2);
                 break;
             case MULTI_PLAYER:
-                initNewPlayer(singlePlayerIp, port, 1);
+                initNewPlayer(multiPlayerIp, port, 1);
                 break;
         }
     }

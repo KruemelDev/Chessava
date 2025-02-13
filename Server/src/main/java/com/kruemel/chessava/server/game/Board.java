@@ -1,7 +1,6 @@
 package com.kruemel.chessava.server.game;
 
 import com.kruemel.chessava.server.clientHandling.Client;
-import com.kruemel.chessava.shared.game.FigureType;
 import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Util;
 import com.kruemel.chessava.shared.game.Figure;
@@ -10,7 +9,7 @@ import com.kruemel.chessava.shared.game.figureTypes.*;
 import java.awt.Color;
 
 public class Board {
-    public Figure[][] figures = {
+    public Figure[][] board = {
             {new Rook(Color.BLACK, 0, 0), new Knight(Color.BLACK, 1, 0), new Bishop(Color.BLACK, 2, 0), new Queen(Color.BLACK, 3, 0), new King(Color.BLACK, 4, 0), new Bishop(Color.BLACK, 5, 0), new Knight(Color.BLACK, 6, 0), new Rook(Color.BLACK, 7, 0)},
             {new Pawn(Color.BLACK, 0, 1), new Pawn(Color.BLACK, 1, 1), new Pawn(Color.BLACK, 2,1), new Pawn(Color.BLACK, 3, 1), new Pawn(Color.BLACK, 4, 1), new Pawn(Color.BLACK, 5, 1), new Pawn(Color.BLACK, 6, 1), new Pawn(Color.BLACK, 7, 1)},
             {null, null, null, null, null, null, null, null},
@@ -29,33 +28,27 @@ public class Board {
     }
 
     public void ApplyMove(Figure figure, int destinationX, int destinationY) {
-        figures[figure.y][figure.x] = null;
-
+        board[figure.y][figure.x] = null;
         figure.x = destinationX;
         figure.y = destinationY;
-        figures[destinationY][destinationX] = figure;
+        board[destinationY][destinationX] = figure;
+
+       // checkChessMate(figure);
     }
 
-    public void HandlePawnOpponentSide(Figure figure) {
-        if (figure.type != FigureType.PAWN) return;
-
-        Pawn pawn = (Pawn) figure;
-        if(pawn.OnOpponentSide()){
-            Client client = this.game.GetPlayerByFigureColor(pawn);
-            client.figureSelect = true;
-            sendFigureSelectionOffer(client);
-        }
-    }
-
-    private void sendFigureSelectionOffer(Client client) {
-        client.WriteMessage(Util.dataToJson(Commands.FIGURE_SELECT.getValue()));
-    }
+//    private void checkChessMate(Figure figure){
+//        Client opponent = game.GetOpponentByPlayer(game.GetPlayerByFigureColor(figure));
+//        if (opponent == null) return;// END game
+//        King king = King.GetKing(opponent.gameColor, board);
+//        if (king == null) return;
+//        if (king.CheckChessMate(board)) System.out.println("win to current"); // TODO handle win
+//    }
 
     public void SendFigures(){
         StringBuilder board = new StringBuilder();
-        for (int i = 0; i < figures.length; i++) {
-            for (int j = 0; j < figures[i].length; j++) {
-                Figure figure = figures[i][j];
+        for (int i = 0; i < this.board.length; i++) {
+            for (int j = 0; j < this.board[i].length; j++) {
+                Figure figure = this.board[i][j];
                 if(figure == null){
                     board.append("null").append("|");
                     continue;

@@ -1,6 +1,5 @@
 package com.kruemel.chessava.server;
 
-import com.kruemel.chessava.server.game.Game;
 import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Packet;
 import com.kruemel.chessava.shared.networking.Util;
@@ -19,6 +18,8 @@ public class Server implements Runnable {
 
     public ArrayList<Client> clients = new ArrayList<>();
 
+    public boolean acceptNewClients = true;
+
     public Server(int port) {
         this.port = port;
 
@@ -26,7 +27,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-            while(true) {
+            while(acceptNewClients) {
                 try {
                     Socket socket = server.accept();
                     DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -47,7 +48,7 @@ public class Server implements Runnable {
                         try {
                             out.writeUTF(json);
                         }catch(Exception e) {
-                            continue;
+                            System.out.println(e.getMessage());
                         }
 
                     }
@@ -64,7 +65,6 @@ public class Server implements Runnable {
         this.clients.add(client);
         UpdateAvailablePlayer();
         System.out.println("Client " + name + " added to game");
-        System.out.println("client amount" + this.clients.size());
     }
     public Client GetClient(String name) {
         for(Client client : this.clients) {
@@ -95,12 +95,14 @@ public class Server implements Runnable {
     }
 
     public void RemoveClient(Client client) {
-        if (client.inGame){
-            for (Client player : client.game.players) {
-                if (!player.name.equals(client.name)){
-                    player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Opponent left the game"));
-                    player.game = null;
-                    player.inGame = false;
+        if(client != null) {
+            if (client.inGame) {
+                for (Client player : client.game.players) {
+                    if (!player.name.equals(client.name)) {
+                        player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Opponent left the game"));
+                        player.game = null;
+                        player.inGame = false;
+                    }
                 }
             }
         }

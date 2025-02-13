@@ -2,6 +2,8 @@ package com.kruemel.chessava.server.game;
 
 import com.kruemel.chessava.server.clientHandling.Client;
 import com.kruemel.chessava.shared.game.Figure;
+import com.kruemel.chessava.shared.game.FigureType;
+import com.kruemel.chessava.shared.game.figureTypes.Pawn;
 import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Util;
 
@@ -60,20 +62,50 @@ public class Game {
     }
 
     public void MoveFigure(int currentX, int currentY, int destinationX, int destinationY){
-        Figure figure = board.figures[currentY][currentX];
-        if (figure == null) return;
-        if (figure.color != this.currentPlayer.gameColor) return;
-        if (currentX == destinationX && currentY == destinationY) return;
-        if(figure.CheckMove(destinationX, destinationY, board.figures)){
-            figure.moved = true;
-            board.ApplyMove(figure, destinationX, destinationY);
-            board.SendFigures();
-            NextPlayer();
-            SendCurrentPlayer();
-
+        try{
+            Figure figure = board.board[currentY][currentX];
+            if (figure == null) return;
+            if (figure.color != this.currentPlayer.gameColor) return;
+            if (currentX == destinationX && currentY == destinationY) return;
+            if(figure.CheckMove(destinationX, destinationY, board.board)){
+                figure.moved = true;
+                board.ApplyMove(figure, destinationX, destinationY);
+                board.SendFigures();
+                if (!HandlePawnOpponentSide(figure)){
+                    NextPlayer();
+                    SendCurrentPlayer();
+                }
+            }
+        } catch (Exception e){
+            SendAllPlayersError("Error occurred while processing move. Try again later.");
         }
 
+
     }
+    public void SendFigureSelectionOffer(Client client) {
+        client.WriteMessage(Util.dataToJson(Commands.FIGURE_SELECT.getValue(), "Select an figure to spawn. Queen, Rook, Bishop, Knight? "));
+    }
+
+    public boolean HandlePawnOpponentSide(Figure figure) {
+        if (figure.type != FigureType.PAWN) return false;
+        Pawn pawn = (Pawn) figure;
+        if(pawn.OnOpponentSide()){
+            Client client = this.GetPlayerByFigureColor(pawn);
+            client.figureSelectActive = true;
+            client.selectFigure = figure;
+            SendFigureSelectionOffer(client);
+            return true;
+        }
+        return false;
+    }
+
+    public Client GetOpponentByPlayer(Client player) {
+        for (Client client : players) {
+            if (player != client) return client;
+        }
+        return null;
+    }
+
     public Client GetPlayerByFigureColor(Figure figure){
         for (Client player : players) {
             if (figure.color == player.gameColor) return player;
@@ -89,6 +121,12 @@ public class Game {
     public void SendCurrentPlayer(){
         for (Client player : players) {
             player.WriteMessage(Util.dataToJson(Commands.NEXT_PLAYER.getValue(), this.currentPlayer.name));
+        }
+    }
+
+    public void SendAllPlayersError(String message){
+        for (Client player : players) {
+            player.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), message));
         }
     }
 

@@ -108,7 +108,7 @@ public class MainFrameManager {
         leaveGameButton.addActionListener(event -> {
             for (Player player : gamePanel.players) {
                 if (player != null) {
-                    player.connectionHandler.ResetToGameModeSelectionScreen("Player left the game");
+                    player.gamePanel.EndGame("Left the game");
                 }
             }
         });
@@ -146,7 +146,6 @@ public class MainFrameManager {
                 GamePanel.setMultiPlayerDestination(ipField.getText(), Integer.parseInt(portField.getText()));
             }
         });
-
 
         panel.add(destinationLabel);
         panel.add(ipLabel);
@@ -196,6 +195,14 @@ public class MainFrameManager {
         mainFrame.revalidate();
         mainFrame.repaint();
     }
+    public String ShowPopUpInput(String message){
+        String input = JOptionPane.showInputDialog(mainFrame, message, JOptionPane.QUESTION_MESSAGE);
+        if(input != null && !input.trim().isEmpty()){
+            return input;
+        }
+        return null;
+    }
+
     public void ShowPopupInfo(String message) {
         JOptionPane.showMessageDialog(mainFrame, message, "Info", JOptionPane.INFORMATION_MESSAGE);
 

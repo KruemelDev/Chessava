@@ -15,7 +15,7 @@ public class Player {
 
     public String name;
     public Color color;
-    GamePanel gamePanel;
+    public GamePanel gamePanel;
 
 
     public Player(String ip, int port, String name, GamePanel gamePanel) {

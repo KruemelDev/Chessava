@@ -82,14 +82,16 @@ public class InstructionListener implements Runnable{
                     if (gamePanel.players[0].equals(connectionHandler.player)){
                         gamePanel.repaint();
                         gamePanel.board.ChangeCurrentMarkColor();
-                        //gamePanel.board.ReverseBoard();
                     }
                     gamePanel.currentPlayerName = name;
                     System.out.println("current player: " + name);
                     break;
                 case FIGURE_SELECT:
-                    // TODO implement figure select
-
+                    String input = "";
+                    while(input.trim().isEmpty()){
+                        input = MainFrameManager.instance.ShowPopUpInput(packet.getData());
+                    }
+                    this.connectionHandler.WriteMessage(Util.dataToJson(Commands.FIGURE_SELECT.getValue(), input));
                     break;
                 case END_GAME:
                     gamePanel.EndGame(packet.getData());
