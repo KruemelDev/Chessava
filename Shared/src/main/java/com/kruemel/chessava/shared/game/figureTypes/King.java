@@ -77,28 +77,31 @@ public class King extends Figure {
         if (posX < 0 || posX >= board[0].length || posY < 0 || posY >= board.length) {
             return false;
         }
-
         Figure[][] tempBoard = new Figure[board.length][board[0].length];
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, tempBoard[i], 0, board[i].length);
         }
+
         if (tempBoard[posY][posX] == null || tempBoard[posY][posX].color != this.color) {
             tempBoard[posY][posX] = new King(this.color, posX, posY);
         }
+
         for (Figure[] row : tempBoard) {
             for (Figure enemy : row) {
                 if (enemy == null || enemy.color == this.color || enemy.type == FigureType.KING) {
                     continue;
                 }
                 if (enemy.CheckAttack(posX, posY, tempBoard)) {
-                    if (alliesHitEnemies(enemy.x, enemy.y, tempBoard)) return false;
+                    if (!allyEnemiesHit(enemy.x, enemy.y, tempBoard)) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
 
-    private boolean alliesHitEnemies(int enemyX, int enemyY, Figure[][] board) {
+    private boolean allyEnemiesHit(int enemyX, int enemyY, Figure[][] board) {
         for (Figure[] row : board) {
             for (Figure ally : row) {
                 if (ally == null || ally.color != this.color || ally.type == FigureType.KING) {
@@ -135,9 +138,10 @@ public class King extends Figure {
             }
         }
 
-        return true;
+        return true; // Kein sicherer Zug für den König → Schachmatt
     }
-    
+
+
     public static King GetKing(Color color, Figure[][]board){
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board.length; x++) {
