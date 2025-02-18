@@ -28,6 +28,7 @@ public class Knight extends Figure {
     @Override
     public boolean CheckMove(int x, int y, Figure[][] board) {
         boolean canMove = CheckAttack(x, y, board);
+
         boolean danger = HandleKingDanger(x, y, canMove, board);
         if(danger) System.out.println("King in danger: " + danger);
         return canMove && !danger;

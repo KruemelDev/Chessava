@@ -103,13 +103,15 @@ public class MainFrameManager {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JButton leaveGameButton = new JButton("Leave Game");
+        JButton leaveGameButton = new JButton("Leave");
         leaveGameButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         leaveGameButton.addActionListener(event -> {
-            for (Player player : gamePanel.players) {
-                if (player != null) {
-                    player.gamePanel.EndGame("Left the game");
-                }
+            if(gamePanel.InGame){
+                gamePanel.EndGame();
+            }
+            else{
+                gamePanel.ClosePlayers();
+                GameModeSelectionScreen();
             }
         });
 

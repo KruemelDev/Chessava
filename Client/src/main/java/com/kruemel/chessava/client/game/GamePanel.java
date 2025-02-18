@@ -27,6 +27,7 @@ public class GamePanel extends JPanel {
 
     public GameMode gameMode;
     public Board board = new Board(this);
+    public boolean InGame;
 
     public GamePanel(GameMode gameMode) {
         setPreferredSize(new Dimension(gamePanelSize, gamePanelSize));
@@ -137,11 +138,29 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public void EndGame(String reason) {
-        MainFrameManager.instance.ShowPopupInfo(reason);
+    public void EndGame() {
         this.board.figures = null;
         this.repaint();
         this.board = new Board(this);
+        for (Player player: players){
+            player.connectionHandler.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue()));
+        }
+    }
+    public void EndGame(String reason) {
+        if(gameMode == GameMode.MULTI_PLAYER){
+            MainFrameManager.instance.ShowPopupInfo(reason);
+        }
+        this.board.figures = null;
+        this.repaint();
+        this.board = new Board(this);
+        for (Player player: players){
+            player.connectionHandler.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue()));
+        }
+    }
+    public void ClosePlayers(){
+        for (Player player : players){
+            player.connectionHandler.CloseConnection();
+        }
     }
 
     private String askForName() {

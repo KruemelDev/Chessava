@@ -24,7 +24,6 @@ public class Client {
     public boolean figureSelectActive = false;
     public Figure selectFigure;
 
-    public boolean inGame;
     public Game game;
     public Color gameColor;
 

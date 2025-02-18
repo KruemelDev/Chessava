@@ -1,7 +1,6 @@
 package com.kruemel.chessava.client.player;
 
 import com.kruemel.chessava.client.*;
-import com.kruemel.chessava.client.game.Board;
 import com.kruemel.chessava.client.game.GameMode;
 import com.kruemel.chessava.client.game.GamePanel;
 import com.kruemel.chessava.shared.networking.Commands;
@@ -44,8 +43,8 @@ public class InstructionListener implements Runnable{
                     if(!Objects.equals(reason, "")) MainFrameManager.instance.ShowPopupInfo(reason);
                     if (gamePanel.gameMode == GameMode.SINGLE_PLAYER) gamePanel.DestroyPlayer();
                     connectionHandler.ResetToGameModeSelectionScreen("ClosedCon");
+                    gamePanel.InGame = false;
                     break;
-
                 case PLAYER_AVAILABLE:
                     if(gamePanel.gameMode == GameMode.SINGLE_PLAYER && !gamePanel.players[0].equals(connectionHandler.player)) break;
                     String players = packet.getData();
@@ -63,6 +62,7 @@ public class InstructionListener implements Runnable{
                     }
                     break;
                 case START_GAME:
+                    gamePanel.InGame = true;
                     gamePanel.repaint();
                     gamePanel.addMouseListener();
                     break;
@@ -95,6 +95,7 @@ public class InstructionListener implements Runnable{
                     break;
                 case END_GAME:
                     gamePanel.EndGame(packet.getData());
+                    gamePanel.InGame = false;
                     break;
                 case ERROR:
                     MainFrameManager.instance.ShowPopupInfo(packet.getData());

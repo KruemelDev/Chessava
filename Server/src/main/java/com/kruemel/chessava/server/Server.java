@@ -59,7 +59,7 @@ public class Server implements Runnable {
             }
     }
 
-    public void AddClient(String name, Socket socket) {
+    public synchronized void AddClient(String name, Socket socket) {
         Client client = new Client(name, socket, this);
         client.StartInstructionListener();
         this.clients.add(client);
@@ -73,7 +73,7 @@ public class Server implements Runnable {
         return null;
     }
 
-    public void UpdateAvailablePlayer(){
+    public synchronized void UpdateAvailablePlayer(){
         StringBuilder players = BuildPlayerString();
         for(Client client : this.clients){
             client.WriteMessage(Util.dataToJson(Commands.PLAYER_AVAILABLE.getValue(), players.toString()));
@@ -88,20 +88,19 @@ public class Server implements Runnable {
         return players;
     }
 
-    private void ClearClosedClients() {
+    private synchronized void ClearClosedClients() {
         for(Client client : this.clients) {
             if (client == null || client.socket.isClosed()) RemoveClient(client);
         }
     }
 
-    public void RemoveClient(Client client) {
+    public synchronized void RemoveClient(Client client) {
         if(client != null) {
-            if (client.inGame) {
+            if (client.game != null) {
                 for (Client player : client.game.players) {
                     if (!player.name.equals(client.name)) {
                         player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Opponent left the game"));
                         player.game = null;
-                        player.inGame = false;
                     }
                 }
             }

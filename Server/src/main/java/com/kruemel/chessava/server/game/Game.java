@@ -8,6 +8,7 @@ import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Util;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Game {
@@ -77,7 +78,9 @@ public class Game {
                 }
             }
         } catch (Exception e){
-            SendAllPlayersError("Error occurred while processing move. Try again later.");
+            System.out.println("Error: " + e.getMessage() + "" + Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException(e);
+           // SendAllPlayersError("Error occurred while processing move. Try again later.");
         }
 
 
@@ -138,7 +141,6 @@ public class Game {
 
     private void setPlayerInGame(){
         for (Client player : players) {
-            player.inGame = true;
             player.game = this;
         }
     }

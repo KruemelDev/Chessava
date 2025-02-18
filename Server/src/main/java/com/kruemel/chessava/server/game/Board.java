@@ -11,7 +11,7 @@ import java.awt.Color;
 public class Board {
     public Figure[][] board = {
             {new Rook(Color.BLACK, 0, 0), new Knight(Color.BLACK, 1, 0), new Bishop(Color.BLACK, 2, 0), new Queen(Color.BLACK, 3, 0), new King(Color.BLACK, 4, 0), new Bishop(Color.BLACK, 5, 0), new Knight(Color.BLACK, 6, 0), new Rook(Color.BLACK, 7, 0)},
-            {new Pawn(Color.BLACK, 0, 1), new Pawn(Color.BLACK, 1, 1), new Pawn(Color.BLACK, 2,1), new Pawn(Color.BLACK, 3, 1), new Pawn(Color.BLACK, 4, 1), new Pawn(Color.BLACK, 5, 1), new Pawn(Color.BLACK, 6, 1), new Pawn(Color.BLACK, 7, 1)},
+            {new Pawn(Color.BLACK, 0, 1), new Pawn(Color.BLACK, 1, 1), new Pawn(Color.BLACK, 2, 1), new Pawn(Color.BLACK, 3, 1), new Pawn(Color.BLACK, 4, 1), new Pawn(Color.BLACK, 5, 1), new Pawn(Color.BLACK, 6, 1), new Pawn(Color.BLACK, 7, 1)},
             {null, null, null, null, null, null, null, null},
             {null, null, null, null, null, null, null, null},
             {null, null, null, null, null, null, null, null},
@@ -22,6 +22,7 @@ public class Board {
 
     Client[] players;
     Game game;
+
     public Board(Client[] players, Game game) {
         this.players = players;
         this.game = game;
@@ -33,23 +34,23 @@ public class Board {
         figure.y = destinationY;
         board[destinationY][destinationX] = figure;
 
-       // checkChessMate(figure);
+        checkChessMate(figure);
     }
 
-//    private void checkChessMate(Figure figure){
-//        Client opponent = game.GetOpponentByPlayer(game.GetPlayerByFigureColor(figure));
-//        if (opponent == null) return;// END game
-//        King king = King.GetKing(opponent.gameColor, board);
-//        if (king == null) return;
-//        if (king.CheckChessMate(board)) System.out.println("win to current"); // TODO handle win
-//    }
+    private void checkChessMate(Figure figure) {
+        Client opponent = game.GetOpponentByPlayer(game.GetPlayerByFigureColor(figure));
+        if (opponent == null) return;// END game
+        King king = King.GetKing(opponent.gameColor, board);
+        if (king == null) return;
+        if (king.CheckChessMate(board)) System.out.println("win to current"); // TODO handle win
+    }
 
-    public void SendFigures(){
+    public void SendFigures() {
         StringBuilder board = new StringBuilder();
         for (int i = 0; i < this.board.length; i++) {
             for (int j = 0; j < this.board[i].length; j++) {
                 Figure figure = this.board[i][j];
-                if(figure == null){
+                if (figure == null) {
                     board.append("null").append("|");
                     continue;
                 }

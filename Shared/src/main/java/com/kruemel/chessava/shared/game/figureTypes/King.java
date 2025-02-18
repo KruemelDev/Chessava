@@ -40,6 +40,14 @@ public class King extends Figure {
 
         Figure figure = board[y][x];
         boolean canMove = CheckAttack(x, y, board);
+        if (canMove) {
+            try{
+                Figure dest = board[y][x];
+            } catch (IndexOutOfBoundsException e){
+                return false;
+            }
+
+        }
 
         boolean move = canMove && checkOpponentFigures(x, y, board);
         if(figure != null) return move && this.color != figure.color;
@@ -50,28 +58,6 @@ public class King extends Figure {
         return checkOpponentKingDistance(destinationX, destinationY, board) && !InDanger(destinationX, destinationY, board);
     }
 
-    public boolean InDanger(int posX, int posY, Figure[][] board) {
-        Figure[][] tempBoard = new Figure[board.length][];
-        for (int i = 0; i < board.length; i++) {
-            tempBoard[i] = board[i].clone();
-        }
-        tempBoard[posY][posX] = new King(this.color, posX, posY);
-
-        for (Figure[] row : tempBoard) {
-            for (Figure enemy : row) {
-                if (enemy == null || enemy.type == FigureType.KING || enemy.color == this.color) continue;
-                if (enemy.CheckAttack(posX, posY, tempBoard)) {
-                    for (Figure[] allyRow : tempBoard) {
-                        for (Figure ally : allyRow) {
-                            if (ally == null || ally.type == FigureType.KING || ally.color != this.color) continue;
-                            if (!ally.CheckAttack(enemy.x, enemy.y, board)) return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
     private boolean checkOpponentKingDistance(int destinationX, int destinationY, Figure[][] board){
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
@@ -85,18 +71,73 @@ public class King extends Figure {
         }
         return false;
     }
-//    public boolean CheckChessMate(Figure[][] board){
-//        return this.InDanger(this.x, this.y, board) &&
-//                this.InDanger(this.x - 1, this.y, board) &&
-//                this.InDanger(this.x + 1, this.y, board) &&
-//                this.InDanger(this.x, this.y - 1, board) &&
-//                this.InDanger(this.x, this.y + 1, board) &&
-//                this.InDanger(this.x - 1, this.y - 1, board) &&
-//                this.InDanger(this.x - 1, this.y + 1, board) &&
-//                this.InDanger(this.x + 1, this.y - 1, board) &&
-//                this.InDanger(this.x + 1, this.y + 1, board);
-//    }
 
+
+    public boolean InDanger(int posX, int posY, Figure[][] board) {
+        if (posX < 0 || posX >= board[0].length || posY < 0 || posY >= board.length) {
+            return false;
+        }
+
+        Figure[][] tempBoard = new Figure[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            System.arraycopy(board[i], 0, tempBoard[i], 0, board[i].length);
+        }
+        if (tempBoard[posY][posX] == null || tempBoard[posY][posX].color != this.color) {
+            tempBoard[posY][posX] = new King(this.color, posX, posY);
+        }
+        for (Figure[] row : tempBoard) {
+            for (Figure enemy : row) {
+                if (enemy == null || enemy.color == this.color || enemy.type == FigureType.KING) {
+                    continue;
+                }
+                if (enemy.CheckAttack(posX, posY, tempBoard)) {
+                    if (alliesHitEnemies(enemy.x, enemy.y, tempBoard)) return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean alliesHitEnemies(int enemyX, int enemyY, Figure[][] board) {
+        for (Figure[] row : board) {
+            for (Figure ally : row) {
+                if (ally == null || ally.color != this.color || ally.type == FigureType.KING) {
+                    continue;
+                }
+                if (ally.CheckAttack(enemyX, enemyY, board)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean CheckChessMate(Figure[][] board) {
+        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+        if (!InDanger(this.x, this.y, board)) {
+            return false;
+        }
+
+        for (int i = 0; i < 8; i++) {
+            int newX = this.x + dx[i];
+            int newY = this.y + dy[i];
+
+            if (newX >= 0 && newX < board[0].length && newY >= 0 && newY < board.length) {
+                Figure figure = board[newY][newX];
+
+                if (figure == null || figure.color != this.color) {
+                    if (!InDanger(newX, newY, board)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+    
     public static King GetKing(Color color, Figure[][]board){
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board.length; x++) {

@@ -16,6 +16,7 @@ public class Board {
 
     private Color markColor = Color.BLACK;
 
+
     public Board(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }

@@ -8,6 +8,7 @@ import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Packet;
 import com.kruemel.chessava.shared.networking.Util;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -55,10 +56,24 @@ public class InstructionListener implements Runnable{
                 case MOVE_FIGURE:
                     moveFigure(packet);
                     break;
+                case END_GAME:
+                    endGame();
+                    break;
                 case FIGURE_SELECT:
                     handleSelectFigure(packet);
                     break;
             }
+
+        }
+    }
+
+    private void endGame(){
+        if (this.client.game != null) {
+            for(Client player : this.client.game.players){
+                player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Game has ended!"));
+            }
+
+            this.client.game = null;
 
         }
     }
@@ -122,7 +137,7 @@ public class InstructionListener implements Runnable{
 
         Client client = server.GetClient(name);
         if(client == null) return;
-        if(client.inGame){
+        if(client.game != null){
             this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The player is already in game"));
             return;
         }
