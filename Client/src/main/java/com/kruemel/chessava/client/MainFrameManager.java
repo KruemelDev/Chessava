@@ -110,7 +110,7 @@ public class MainFrameManager {
                 gamePanel.EndGame();
             }
             else{
-                gamePanel.ClosePlayers();
+                gamePanel.DestroyPlayer();
                 GameModeSelectionScreen();
             }
         });

@@ -14,6 +14,7 @@ public enum Commands {
     FIGURE_SELECT("FigureSelect"),
     NEXT_PLAYER("NextPlayer"),
     END_GAME("EndGame"),
+    GAME_OVER("GameOver"),
     ERROR("Error");
 
     private final String command;

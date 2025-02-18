@@ -20,11 +20,10 @@ public class Board {
             {new Rook(Color.WHITE, 0, 7), new Knight(Color.WHITE, 1, 7), new Bishop(Color.WHITE, 2, 7), new Queen(Color.WHITE, 3, 7), new King(Color.WHITE, 4, 7), new Bishop(Color.WHITE, 5, 7), new Knight(Color.WHITE, 6, 7), new Rook(Color.WHITE, 7, 7)}
     };
 
-    Client[] players;
-    Game game;
+    volatile Game game;
+    public boolean win = false;
 
-    public Board(Client[] players, Game game) {
-        this.players = players;
+    public Board(Game game) {
         this.game = game;
     }
 
@@ -39,12 +38,22 @@ public class Board {
 
     private void checkChessMate(Figure figure) {
         Client opponent = game.GetOpponentByPlayer(game.GetPlayerByFigureColor(figure));
-        if (opponent == null) return;// END game
+        if (opponent == null){
+            game.EndGame("Error");
+            return;
+        }
         King king = King.GetKing(opponent.gameColor, board);
         if (king == null) return;
-        if (king.CheckChessMate(board)) System.out.println("win to current"); // TODO handle win
+        if (king.CheckChessMate(board)) win = true;
     }
 
+    public void HandleWin(){
+        for (Client player : game.players) {
+            player.WriteMessage(Util.dataToJson(Commands.GAME_OVER.getValue(),"Winner is: " + game.GetOpponentByPlayer(game.currentPlayer).name + " Congratulations!"));
+            player.game = null;
+        }
+        game = null;
+    }
     public void SendFigures() {
         StringBuilder board = new StringBuilder();
         for (int i = 0; i < this.board.length; i++) {
@@ -61,7 +70,7 @@ public class Board {
         if (!board.isEmpty()) {
             board.setLength(board.length() - 1);
         }
-        for (Client player : players) {
+        for (Client player : game.players) {
             player.WriteMessage(Util.dataToJson(Commands.SET_FIGURES.getValue(), board.toString()));
         }
 

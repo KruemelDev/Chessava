@@ -94,7 +94,13 @@ public class InstructionListener implements Runnable{
                     this.connectionHandler.WriteMessage(Util.dataToJson(Commands.FIGURE_SELECT.getValue(), input));
                     break;
                 case END_GAME:
-                    gamePanel.EndGame(packet.getData());
+                    if(gamePanel.players[0].equals(connectionHandler.player)){
+                        gamePanel.EndGame(packet.getData());
+                    }
+                    gamePanel.InGame = false;
+                    break;
+                case GAME_OVER:
+                    gamePanel.GameOver(packet.getData());
                     gamePanel.InGame = false;
                     break;
                 case ERROR:

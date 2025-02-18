@@ -24,7 +24,7 @@ public class Client {
     public boolean figureSelectActive = false;
     public Figure selectFigure;
 
-    public Game game;
+    public volatile Game game;
     public Color gameColor;
 
     public Client(String name, Socket socket, Server server) {

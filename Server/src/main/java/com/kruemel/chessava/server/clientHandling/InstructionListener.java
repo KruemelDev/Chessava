@@ -8,7 +8,6 @@ import com.kruemel.chessava.shared.networking.Commands;
 import com.kruemel.chessava.shared.networking.Packet;
 import com.kruemel.chessava.shared.networking.Util;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -69,10 +68,8 @@ public class InstructionListener implements Runnable{
 
     private void endGame(){
         if (this.client.game != null) {
-            for(Client player : this.client.game.players){
-                player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Game has ended!"));
-            }
-
+            Client opponent = this.client.game.GetOpponentByPlayer(this.client);
+            opponent.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), "Game has ended!"));
             this.client.game = null;
 
         }
@@ -110,7 +107,9 @@ public class InstructionListener implements Runnable{
             if(!this.client.game.currentPlayer.equals(this.client)) return;
             this.client.game.MoveFigure(Integer.parseInt(positions[0]), Integer.parseInt(positions[1]), Integer.parseInt(positions[2]), Integer.parseInt(positions[3]));
         } catch (Exception e){
-            this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "Error try again later"));
+            if(this.client.game != null) {
+                this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "Error try again later"));
+            }
         }
     }
 
@@ -137,6 +136,7 @@ public class InstructionListener implements Runnable{
 
         Client client = server.GetClient(name);
         if(client == null) return;
+        System.out.println("client.gamem" + client.game);
         if(client.game != null){
             this.client.WriteMessage(Util.dataToJson(Commands.ERROR.getValue(), "The player is already in game"));
             return;

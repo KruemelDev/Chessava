@@ -23,7 +23,7 @@ public class GamePanel extends JPanel {
     public Player[] players = new Player[2];
     public String currentPlayerName;
 
-    private static Server server;
+    private volatile static Server server;
 
     public GameMode gameMode;
     public Board board = new Board(this);
@@ -66,6 +66,7 @@ public class GamePanel extends JPanel {
     public Player GetCurrentPlayer() {
         if (currentPlayerName == null) return null;
         for (Player player : players) {
+            if (player == null) continue;
             if (player.name.equals(currentPlayerName)) {
                 return player;
             }
@@ -143,6 +144,7 @@ public class GamePanel extends JPanel {
         this.repaint();
         this.board = new Board(this);
         for (Player player: players){
+            if (player == null) continue;
             player.connectionHandler.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue()));
         }
     }
@@ -154,13 +156,16 @@ public class GamePanel extends JPanel {
         this.repaint();
         this.board = new Board(this);
         for (Player player: players){
+            if (player == null) continue;
             player.connectionHandler.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue()));
         }
     }
-    public void ClosePlayers(){
-        for (Player player : players){
-            player.connectionHandler.CloseConnection();
-        }
+
+    public void GameOver(String text) {
+        MainFrameManager.instance.ShowPopupInfo(text);
+        this.board.figures = null;
+        this.repaint();
+        this.board = new Board(this);
     }
 
     private String askForName() {

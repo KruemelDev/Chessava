@@ -25,7 +25,7 @@ public class Game {
         this.player2 = player2;
 
         players = new Client[]{player1, player2};
-        board = new Board(players, this);
+        board = new Board(this);
     }
     public void InitGame(){
         setPlayerInGame();
@@ -76,11 +76,13 @@ public class Game {
                     NextPlayer();
                     SendCurrentPlayer();
                 }
+                if (board.win){
+                    board.HandleWin();
+                }
             }
         } catch (Exception e){
-            System.out.println("Error: " + e.getMessage() + "" + Arrays.toString(e.getStackTrace()));
-            throw new RuntimeException(e);
-           // SendAllPlayersError("Error occurred while processing move. Try again later.");
+            System.out.println("Error: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
+           SendAllPlayersError("Error occurred while processing move. Try again later.");
         }
 
 
@@ -136,6 +138,12 @@ public class Game {
     private void sendGameStart(){
         for (Client player : players) {
             player.WriteMessage(Util.dataToJson(Commands.START_GAME.getValue()));
+        }
+    }
+
+    public void EndGame(String reason){
+        for (Client player : players){
+            player.WriteMessage(Util.dataToJson(Commands.END_GAME.getValue(), reason));
         }
     }
 
