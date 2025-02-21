@@ -1,8 +1,10 @@
 package com.kruemel.chessava.client;
 
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.kruemel.chessava.client.game.GameMode;
 import com.kruemel.chessava.client.game.GamePanel;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,6 +24,8 @@ public class MainFrameManager {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.mainFrameTitle = mainFrameTitle;
+
+        FlatMacDarkLaf.setup();
 
         mainFrame = new JFrame(this.mainFrameTitle);
         mainFrame.setSize(this.screenWidth, this.screenHeight);
@@ -161,7 +165,7 @@ public class MainFrameManager {
     public void GameModeSelectionScreen(){
         mainFrame.getContentPane().removeAll();
         JPanel panel = new JPanel();
-
+        //panel.setSize(this.screenWidth, this.screenHeight);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(Box.createVerticalGlue());
 

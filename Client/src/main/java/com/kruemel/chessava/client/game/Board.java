@@ -43,14 +43,17 @@ public class Board {
     }
     private void paintFigures(Graphics2D g2d){
         // TODO reverse figures to current player view
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                Figure figure = figures[y][x];
-                if (figure == null) continue;
-                g2d.drawImage(figure.image, gamePanel.tileSize * x, gamePanel.tileSize * y, gamePanel.tileSize, gamePanel.tileSize, null);
+        try{
+            for (int y = 0; y < 8; y++) {
+                for (int x = 0; x < 8; x++) {
+                    Figure figure = figures[y][x];
+                    if (figure == null) continue;
+                    g2d.drawImage(figure.image, gamePanel.tileSize * x, gamePanel.tileSize * y, gamePanel.tileSize, gamePanel.tileSize, null);
 
+                }
             }
-        }
+        } catch (Exception ignored){}
+
 
     }
 
