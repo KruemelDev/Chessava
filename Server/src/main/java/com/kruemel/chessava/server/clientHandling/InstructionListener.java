@@ -79,7 +79,14 @@ public class InstructionListener implements Runnable{
         if(!this.client.figureSelectActive) return;
         if (this.client.selectFigure == null) return;
         String figureString = packet.getData();
-        FigureType figureType = FigureType.valueOf(figureString.toUpperCase());
+        FigureType figureType;
+        try{
+            figureType = FigureType.valueOf(figureString.toUpperCase());
+        } catch (Exception e){
+            this.client.game.SendFigureSelectionOffer(this.client);
+            return;
+        }
+
         if (checkSelectFigure(figureType)) {
             Figure selectFigure = this.client.selectFigure;
             Figure figure = figureType.createInstance(selectFigure.color, selectFigure.x, selectFigure.y);

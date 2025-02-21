@@ -90,6 +90,7 @@ public class InstructionListener implements Runnable{
                     String input = "";
                     while(input.trim().isEmpty()){
                         input = MainFrameManager.instance.ShowPopUpInput(packet.getData());
+                        if(input == null) input = "";
                     }
                     this.connectionHandler.WriteMessage(Util.dataToJson(Commands.FIGURE_SELECT.getValue(), input));
                     break;

@@ -2,7 +2,6 @@ package com.kruemel.chessava.client;
 
 import com.kruemel.chessava.client.game.GameMode;
 import com.kruemel.chessava.client.game.GamePanel;
-import com.kruemel.chessava.client.player.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,10 +23,10 @@ public class MainFrameManager {
         this.screenHeight = screenHeight;
         this.mainFrameTitle = mainFrameTitle;
 
-
         mainFrame = new JFrame(this.mainFrameTitle);
         mainFrame.setSize(this.screenWidth, this.screenHeight);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 
         mainFrame.setVisible(true);
         mainFrame.setResizable(true);
