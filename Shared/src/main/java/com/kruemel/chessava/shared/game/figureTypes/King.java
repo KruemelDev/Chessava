@@ -6,6 +6,7 @@ import com.kruemel.chessava.shared.game.FigureType;
 import java.awt.Color;
 
 public class King extends Figure {
+
     public King(Color color, int x, int y) {
         super(color, "/images/king", x, y);
         this.type = FigureType.KING;
@@ -36,7 +37,7 @@ public class King extends Figure {
 
     @Override
     public boolean CheckMove(int x, int y, Figure[][] board) {
-        // TODO implement Rochieren
+        // TODO implement castling
 
         Figure figure = board[y][x];
         boolean canMove = CheckAttack(x, y, board);
@@ -49,13 +50,13 @@ public class King extends Figure {
 
         }
 
-        boolean move = canMove && checkOpponentFigures(x, y, board);
+        boolean move = canMove && checkOpponentFigures(x, y, canMove, board);
         if(figure != null) return move && this.color != figure.color;
         else return move;
 
     }
-    private boolean checkOpponentFigures(int destinationX, int destinationY, Figure[][] board) {
-        return checkOpponentKingDistance(destinationX, destinationY, board) && !InDanger(destinationX, destinationY, board);
+    private boolean checkOpponentFigures(int destinationX, int destinationY, boolean canMove, Figure[][] board) {
+        return checkOpponentKingDistance(destinationX, destinationY, board) && !HandleKingDanger(destinationX, destinationY, canMove, board);
     }
 
     private boolean checkOpponentKingDistance(int destinationX, int destinationY, Figure[][] board){
@@ -73,41 +74,27 @@ public class King extends Figure {
     }
 
 
-    public boolean InDanger(int posX, int posY, Figure[][] board) {
-        if (posX < 0 || posX >= board[0].length || posY < 0 || posY >= board.length) {
+    public boolean InDanger(Figure[][] board) {
+        if (!isValidPosition(this.x, this.y, board)) {
             return false;
         }
-        Figure[][] tempBoard = new Figure[board.length][board[0].length];
-        for (int i = 0; i < board.length; i++) {
-            System.arraycopy(board[i], 0, tempBoard[i], 0, board[i].length);
-        }
+        return isAttacked(board);
+    }
 
-        if (tempBoard[posY][posX] == null || tempBoard[posY][posX].color != this.color) {
-            tempBoard[posY][posX] = new King(this.color, posX, posY);
-        }
 
-        for (Figure[] row : tempBoard) {
+    private boolean isValidPosition(int x, int y, Figure[][] board) {
+        return x >= 0 && x < board[0].length && y >= 0 && y < board.length;
+    }
+
+    private boolean isAttacked(Figure[][] board) {
+
+
+        for (Figure[] row : board) {
             for (Figure enemy : row) {
                 if (enemy == null || enemy.color == this.color || enemy.type == FigureType.KING) {
                     continue;
                 }
-                if (enemy.CheckAttack(posX, posY, tempBoard)) {
-                    if (!allyEnemiesHit(enemy.x, enemy.y, tempBoard)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean allyEnemiesHit(int enemyX, int enemyY, Figure[][] board) {
-        for (Figure[] row : board) {
-            for (Figure ally : row) {
-                if (ally == null || ally.color != this.color || ally.type == FigureType.KING) {
-                    continue;
-                }
-                if (ally.CheckAttack(enemyX, enemyY, board)) {
+                if (enemy.CheckAttack(this.x, this.y, board)){
                     return true;
                 }
             }
@@ -116,29 +103,37 @@ public class King extends Figure {
     }
 
     public boolean CheckChessMate(Figure[][] board) {
-        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
-        int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};
+        Figure[][] copy = DeepCopyBoard(board);
 
-        if (!InDanger(this.x, this.y, board)) {
+        if (!InDanger(copy)) {
             return false;
         }
+
+        int[] dx = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dy = {-1, 0, 1, -1, 1, -1, 0, 1};
 
         for (int i = 0; i < 8; i++) {
             int newX = this.x + dx[i];
             int newY = this.y + dy[i];
 
-            if (newX >= 0 && newX < board[0].length && newY >= 0 && newY < board.length) {
-                Figure figure = board[newY][newX];
+            if (isValidPosition(newX, newY, copy)) {
+                Figure target = copy[newY][newX];
+                if (target == null || target.color != this.color) {
+                    int oldX = this.x;
+                    int oldY = this.y;
 
-                if (figure == null || figure.color != this.color) {
-                    if (!InDanger(newX, newY, board)) {
+                    this.x = newX;
+                    this.y = newY;
+                    if (!InDanger(copy)) {
                         return false;
                     }
+                    this.x = oldX;
+                    this.y = oldY;
                 }
             }
         }
 
-        return true; // Kein sicherer Zug für den König → Schachmatt
+        return true;
     }
 
 

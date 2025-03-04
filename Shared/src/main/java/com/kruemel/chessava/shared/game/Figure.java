@@ -45,21 +45,48 @@ public abstract class Figure {
         }
         return null;
     }
-    public boolean HandleKingDanger(int x, int y, boolean canMove, Figure[][] board){
+    public boolean HandleKingDanger(int x, int y, boolean canMove, Figure[][] board) {
         King king = King.GetKing(this.color, board);
-        if(king == null) return false;
-        if (king.InDanger(king.x, king.y, board)) {
-            if(canMove) {
-                // Depp copy of board for 2d array
-                Figure[][] tempBoard = new Figure[board.length][];
-                for (int i = 0; i < board.length; i++) {
-                    tempBoard[i] = board[i].clone();
+        if (king == null) return false;
+        if (!canMove) return false;
+
+        Figure[][] tempBoard = DeepCopyBoard(board);
+        int oldX = this.x;
+        int oldY = this.y;
+        Figure targetFigure = tempBoard[y][x];
+        King tempKing = King.GetKing(this.color, tempBoard);
+        if (tempKing == null) return false;
+
+        if (targetFigure != null && this.color == targetFigure.color) {
+            return false;
+        }
+        tempBoard[oldY][oldX] = null;
+        tempBoard[y][x] = this;
+
+        this.x = x;
+        this.y = y;
+
+        boolean kingStillInDanger = king.InDanger(tempBoard);
+
+        this.x = oldX;
+        this.y = oldY;
+
+        return kingStillInDanger;
+    }
+
+    public static Figure[][] DeepCopyBoard(Figure[][] board){
+        Figure[][] copy = new Figure[board.length][board[0].length];
+        for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                Figure figure = board[y][x];
+                if (figure == null) {
+                    copy[y][x] = null;
+                    continue;
                 }
-                tempBoard[y][x] = this;
-                return king.InDanger(king.x, king.y, tempBoard);
+                copy[y][x] = figure.type.createInstance(figure.color, figure.x, figure.y);
             }
         }
-        return false;
+        return copy;
     }
 
     public boolean CheckStraightInfiniteMovement(int x, int y, Figure[][] board){

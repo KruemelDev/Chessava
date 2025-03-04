@@ -71,6 +71,7 @@ public class Game {
             if(figure.CheckMove(destinationX, destinationY, board.board)){
                 figure.moved = true;
                 board.ApplyMove(figure, destinationX, destinationY);
+                board.CheckChessMate(figure);
                 board.SendFigures();
                 if (!HandlePawnOpponentSide(figure)){
                     NextPlayer();

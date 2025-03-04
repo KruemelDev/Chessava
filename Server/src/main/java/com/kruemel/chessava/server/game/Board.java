@@ -32,19 +32,18 @@ public class Board {
         figure.x = destinationX;
         figure.y = destinationY;
         board[destinationY][destinationX] = figure;
-
-        checkChessMate(figure);
     }
 
-    private void checkChessMate(Figure figure) {
-        Client opponent = game.GetOpponentByPlayer(game.GetPlayerByFigureColor(figure));
-        if (opponent == null){
+    public void CheckChessMate(Figure figure) {
+        Client player = game.GetOpponentByPlayer(game.GetPlayerByFigureColor(figure));
+        if (player == null){
             game.EndGame("Error");
             return;
         }
-        King king = King.GetKing(opponent.gameColor, board);
+        King king = King.GetKing(player.gameColor, board);
         if (king == null) return;
         if (king.CheckChessMate(board)) win = true;
+
     }
 
     public void HandleWin(){
