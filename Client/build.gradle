@@ -5,7 +5,7 @@ plugins {
 }
 apply plugin: 'com.gradleup.shadow'
 group = 'com.kruemel'
-version = '0.1-client'
+version = '0.2-client'
 
 repositories {
     mavenCentral()
