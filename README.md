@@ -3,6 +3,9 @@
 ## Requirements
 - Java 17
 
+## Build
+- To build the project simply run: ````./gradlew shadowjar````
+
 ## Functions
 - Local(Lan) mode
 - Multiplayer mode
